@@ -530,7 +530,11 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Overview · Aug 1</div>
           <sc-if value="{{ isSubscribed }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Subscribed</span></sc-if>
-          <sc-if value="{{ isFreeTrial }}" hint-placeholder-val="{{ true }}"><span class="tag tag-neutral">Free Trial ({{ freeTrialDays }} days left)</span></sc-if>
+          <sc-if value="{{ isFreeTrial }}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{ freeTrialDays <= 3 }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Trial expiring in {{ freeTrialDays }} days</span></sc-if>
+            <sc-if value="{{ freeTrialDays > 3 }}" hint-placeholder-val="{{ true }}"><span class="tag tag-neutral">Free Trial ({{ freeTrialDays }} days left)</span></sc-if>
+          </sc-if>
+          <sc-if value="{{ subscriptionStatus === 'expired' }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Trial expired — Subscribe now</span></sc-if>
         </div>
         <h2 style="margin:6px 0 0">{{ greeting }}</h2>
 
@@ -816,6 +820,7 @@ class Component extends DCLogic {
       autoLevel: 'Approve first', voice: 'Warm', refundCap: '50', discountCap: '20',
       uploads: {}, plan: 'Growth',
       isSubscribed: false, isFreeTrial: true, freeTrialDays: 14, subscriptionStatus: 'trial',
+      trialStartDate: null,
     };
 
     this.state = Object.assign(base, this.loadSaved());
@@ -860,10 +865,38 @@ class Component extends DCLogic {
       }
     }, 60 * 60 * 1000); // Check every hour
 
+    // Free trial countdown
+    this.trialCheck = setInterval(() => {
+      const st = this.state;
+      if (st.isFreeTrial && !st.isSubscribed) {
+        const trialStart = localStorage.getItem('trialStartDate');
+        if (!trialStart) {
+          localStorage.setItem('trialStartDate', String(Date.now()));
+          this.setState({ trialStartDate: Date.now() });
+        } else {
+          const trialStartTime = parseInt(trialStart);
+          const now = Date.now();
+          const daysPassed = Math.floor((now - trialStartTime) / (24 * 60 * 60 * 1000));
+          const daysRemaining = 14 - daysPassed;
+          
+          if (daysRemaining <= 0) {
+            // Trial expired
+            this.setState({ isFreeTrial: false, freeTrialDays: 0, subscriptionStatus: 'expired' });
+            this.toast('Trial expired', 'Your free trial has ended. Please subscribe to continue.');
+            if (this.curScreen() !== 'login') {
+              this.setState({ screen: 'login' });
+            }
+          } else {
+            this.setState({ freeTrialDays: daysRemaining });
+          }
+        }
+      }
+    }, 60 * 1000); // Check every minute
+
     this.checkAI();
   }
 
-  componentWillUnmount() { clearInterval(this.clock); clearInterval(this.ticker); clearInterval(this.billingCheck); }
+  componentWillUnmount() { clearInterval(this.clock); clearInterval(this.ticker); clearInterval(this.billingCheck); clearInterval(this.trialCheck); }
 
   componentDidUpdate() { this.save(); }
 
@@ -876,12 +909,26 @@ class Component extends DCLogic {
       const s = JSON.parse(raw);
       const keep = ['screen', 'products', 'orders', 'tickets', 'requests', 'genItems', 'feed', 'plan',
         'voice', 'autoLevel', 'refundCap', 'discountCap', 'uploads', 'onbConnected', 'onbUrl',
-        'rewrite', 'actionCount', 'mkType', 'isSubscribed', 'isFreeTrial', 'freeTrialDays', 'subscriptionStatus'];
+        'rewrite', 'actionCount', 'mkType', 'isSubscribed', 'isFreeTrial', 'freeTrialDays', 'subscriptionStatus', 'trialStartDate', 'subscriptionStatus'];
       const out = {};
       keep.forEach(k => { if (s[k] !== undefined) out[k] = s[k]; });
       // Check localStorage for subscription status
       if (localStorage.getItem('userSubscribed') === 'true') {
         out.isSubscribed = true;
+      }
+      // Check trial status on load
+      if (out.isFreeTrial && !out.isSubscribed) {
+        const trialStart = localStorage.getItem('trialStartDate');
+        if (trialStart) {
+          const daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (24 * 60 * 60 * 1000));
+          if (daysPassed >= 14) {
+            out.isFreeTrial = false;
+            out.freeTrialDays = 0;
+            out.subscriptionStatus = 'expired';
+          } else {
+            out.freeTrialDays = 14 - daysPassed;
+          }
+        }
       }
       // never restore a transient "working" flag
       if (out.products) out.products = out.products.map(p => p.st === 'generating' ? { ...p, st: p.desc ? 'generated' : 'draft' } : p);
@@ -1321,10 +1368,30 @@ class Component extends DCLogic {
       isSubscribed: st.isSubscribed || localStorage.getItem('userSubscribed') === 'true',
       isFreeTrial: st.isFreeTrial,
       freeTrialDays: st.freeTrialDays,
+      subscriptionStatus: st.subscriptionStatus,
 
       signIn: () => {
         const st = this.state;
         const userSubscribed = localStorage.getItem('userSubscribed') === 'true';
+        
+        // Check if trial has expired
+        if (st.isFreeTrial && !st.isSubscribed) {
+          const trialStart = localStorage.getItem('trialStartDate');
+          if (trialStart) {
+            const daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (24 * 60 * 60 * 1000));
+            if (daysPassed >= 14) {
+              this.setState({ isFreeTrial: false, freeTrialDays: 0, subscriptionStatus: 'expired' });
+              window.open('https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1', '_blank');
+              this.toast('Trial expired', 'Your free trial has ended. Please subscribe to continue.');
+              return;
+            }
+          } else {
+            // Start trial on first sign in
+            localStorage.setItem('trialStartDate', String(Date.now()));
+            this.setState({ trialStartDate: Date.now() });
+          }
+        }
+        
         if (st.isSubscribed || st.isFreeTrial || userSubscribed) {
           if (userSubscribed) {
             this.setState({ isSubscribed: true, screen: 'dashboard' });
@@ -1339,6 +1406,25 @@ class Component extends DCLogic {
       startOnboarding: () => {
         const st = this.state;
         const userSubscribed = localStorage.getItem('userSubscribed') === 'true';
+        
+        // Check if trial has expired
+        if (st.isFreeTrial && !st.isSubscribed) {
+          const trialStart = localStorage.getItem('trialStartDate');
+          if (trialStart) {
+            const daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (24 * 60 * 60 * 1000));
+            if (daysPassed >= 14) {
+              this.setState({ isFreeTrial: false, freeTrialDays: 0, subscriptionStatus: 'expired' });
+              window.open('https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1', '_blank');
+              this.toast('Trial expired', 'Your free trial has ended. Please subscribe to continue.');
+              return;
+            }
+          } else {
+            // Start trial on first onboarding
+            localStorage.setItem('trialStartDate', String(Date.now()));
+            this.setState({ trialStartDate: Date.now() });
+          }
+        }
+        
         if (st.isSubscribed || st.isFreeTrial || userSubscribed) {
           if (userSubscribed) {
             this.setState({ isSubscribed: true, screen: 'onboarding', onbStep: 1 });
