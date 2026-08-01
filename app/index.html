@@ -1330,7 +1330,7 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state, screen = this.curScreen();
     const storeName = this.props.storeName ?? 'Kiln & Ember';
-    const appScreens = ['dashboard', 'products', 'orders', 'marketing', 'support', 'requests', 'billing'];
+    const appScreens = ['dashboard', 'products', 'orders', 'marketing', 'support', 'requests'];
     const isApp = appScreens.includes(screen);
     const hour = new Date().getHours();
     const sel = st.tickets.find(t => t.id === st.selTicket);
