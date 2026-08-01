@@ -18,6 +18,7 @@ class Component extends DCLogic {
       tickets: [],
       requests: [],
       genItems: [],
+      user: null, loginEmail: '', loginPassword: '', authBusy: false,
       selTicket: null, reqText: '', mkTopic: '', mkType: 'Instagram post', mkBusy: false,
       onbUrl: '', onbConnected: false, rewrite: 'now',
       autoLevel: 'Approve first', voice: 'Warm', refundCap: '50', discountCap: '20',
@@ -50,6 +51,62 @@ class Component extends DCLogic {
     }, 9000);
 
     this.checkAI();
+    this.checkAuth();
+  }
+
+  // ------------------------------------------------------------- accounts
+
+  /** Restores an existing session on load so a reload doesn't sign you out. */
+  async checkAuth() {
+    try {
+      const r = await this.api('/api/account/me');
+      if (r.signedIn) {
+        this.setState({ user: r.user });
+        if (this.curScreen() === 'login') {
+          this.setState({ screen: r.user.setup ? 'dashboard' : 'onboarding' });
+        }
+      }
+    } catch (e) { /* offline — stay on the login screen */ }
+  }
+
+  async signIn() {
+    const email = this.state.loginEmail.trim();
+    const password = this.state.loginPassword;
+    if (!email || !password) { this.toast('Enter your details', 'Email and password are both required.'); return; }
+    this.setState({ authBusy: true });
+    try {
+      const r = await this.api('/api/account/login', { email, password });
+      this.setState({ user: r.user, authBusy: false, loginPassword: '' });
+      this.toast('Signed in', email);
+      this.setState({ screen: r.user.setup ? 'dashboard' : 'onboarding' });
+    } catch (e) {
+      this.setState({ authBusy: false });
+      this.toast('Sign-in failed', String(e.message || e));
+    }
+  }
+
+  async createAccount() {
+    const email = this.state.loginEmail.trim();
+    const password = this.state.loginPassword;
+    if (!email || !password) {
+      this.toast('Enter an email and password', 'Then press “Set up your agent” to create the account.');
+      return;
+    }
+    this.setState({ authBusy: true });
+    try {
+      const r = await this.api('/api/account/signup', { email, password });
+      this.setState({ user: r.user, authBusy: false, loginPassword: '', screen: 'onboarding', onbStep: 1 });
+      this.toast('Account created', email + ' — let’s set up your store.');
+    } catch (e) {
+      this.setState({ authBusy: false });
+      this.toast('Could not create account', String(e.message || e));
+    }
+  }
+
+  async signOut() {
+    try { await this.api('/api/account/logout', {}); } catch (e) { /* best effort */ }
+    this.setState({ user: null, screen: 'login', loginPassword: '' });
+    this.toast('Signed out', 'See you next time.');
   }
 
   componentWillUnmount() { clearInterval(this.clock); clearInterval(this.ticker); }
@@ -352,31 +409,28 @@ class Component extends DCLogic {
     const patch = (fields) => this.setState(s => ({ requests: s.requests.map(r => r.key === stamp ? { ...r, ...fields } : r) }));
 
     if (!this.state.ai.ready) {
-      patch({ st: 'progress', resp: 'Queued — add OPENROUTER_API_KEY to .env and reload the page to have the agent act on this.' });
+      patch({ st: 'progress', resp: 'No API key — set OPENROUTER_API_KEY in .env and reload the page.' });
       return;
     }
-    try {
-      const plan = await this.llm(
-        this.brandBrief() +
-        `\n\nThe store owner asked you to do this: "${text}"\n` +
-        'Reply as the agent starting work. One or two sentences: exactly what you are changing (name SKUs or numbers where they apply) and roughly how long it takes. First person, no greeting.',
-        { maxTokens: 160, temperature: 0.6 }
-      );
-      patch({ st: 'progress', resp: plan });
-      this.pushFeed('request', 'Working on: ' + text.slice(0, 50));
 
-      const done = await this.llm(
+    // A direct prompt to the model. Whatever you type goes straight through;
+    // the store context is supplied so it can answer about the catalog too.
+    patch({ st: 'progress', resp: 'Thinking…' });
+    try {
+      const answer = await this.llm(
         this.brandBrief() +
-        `\n\nYou just finished this task for the store owner: "${text}"\nYour plan was: "${plan}"\n` +
-        'Report completion in one or two sentences: what is now live, and one concrete result or number. First person, no greeting.',
-        { maxTokens: 160, temperature: 0.6 }
+        '\n\nYou are the operator of this store, talking to its owner. ' +
+        'Answer the message below directly and usefully. If it asks you to do something you can actually reason about ' +
+        '(pricing, copy, planning, analysis), do it now in your reply rather than promising to do it later.\n\n' +
+        `Owner: ${text}`,
+        { maxTokens: 900, temperature: 0.7 }
       );
-      patch({ st: 'done', resp: done });
-      this.toast('Request completed', '"' + text.slice(0, 44) + (text.length > 44 ? '…' : '') + '" is live');
-      this.pushFeed('request', 'Completed your request: ' + text.slice(0, 50));
+      patch({ st: 'done', resp: answer });
+      this.toast('Answered', text.slice(0, 44) + (text.length > 44 ? '…' : ''));
+      this.pushFeed('request', 'Answered: ' + text.slice(0, 50));
     } catch (e) {
-      patch({ st: 'progress', resp: 'Stalled — ' + String(e.message || e).slice(0, 120) });
-      this.aiFail(e, 'Request');
+      patch({ st: 'progress', resp: 'Failed — ' + String(e.message || e).slice(0, 160) });
+      this.aiFail(e, 'Prompt');
     }
   }
 
@@ -466,6 +520,28 @@ class Component extends DCLogic {
     input.click();
   }
 
+  /** Finishes setup: persists it to the account, then opens the dashboard. */
+  async launchAgent() {
+    const st = this.state;
+    const aiOn = st.ai.ready;
+    if (st.user) {
+      try {
+        const r = await this.api('/api/account/setup', {
+          storeUrl: st.onbUrl, voice: st.voice, autoLevel: st.autoLevel,
+          refundCap: st.refundCap, discountCap: st.discountCap,
+        });
+        this.setState({ user: r.user });
+        this.pushFeed('agent', 'Setup saved to your account (' + r.user.email + ')');
+      } catch (e) {
+        this.toast('Could not save setup', String(e.message || e));
+      }
+    }
+    this.setState({ screen: 'dashboard' });
+    this.pushFeed('agent', 'Agent launched — ' + (aiOn ? 'running on ' + st.ai.model : 'idle until an API key is set'));
+    this.toast('Agent is live', aiOn ? ('Running on ' + st.ai.model) : 'Add OPENROUTER_API_KEY to .env, then reload');
+    if (st.rewrite === 'now' && aiOn && st.products.length) this.genAllDesc();
+  }
+
   // ------------------------------------------------------------ render vals
 
   renderVals() {
@@ -507,8 +583,14 @@ class Component extends DCLogic {
       scDashboard: screen === 'dashboard', scProducts: screen === 'products', scOrders: screen === 'orders',
       scMarketing: screen === 'marketing', scSupport: screen === 'support', scRequests: screen === 'requests', scBilling: screen === 'billing',
 
-      signIn: () => this.setState({ screen: 'dashboard' }),
-      startOnboarding: () => this.setState({ screen: 'onboarding', onbStep: 1 }),
+      signIn: () => this.signIn(),
+      startOnboarding: () => this.createAccount(),
+      signOut: () => this.signOut(),
+      loginEmail: st.loginEmail, setLoginEmail: e => this.setState({ loginEmail: e.target.value }),
+      loginPassword: st.loginPassword, setLoginPassword: e => this.setState({ loginPassword: e.target.value }),
+      authBusy: st.authBusy,
+      signInLabel: st.authBusy ? 'Working…' : 'Sign in',
+      userEmail: st.user ? st.user.email : '',
       greeting: (hour < 12 ? 'Good morning.' : hour < 18 ? 'Good afternoon.' : 'Good evening.'),
       countdown: this.fmt(st.cutoff - st.now),
       goOrders: () => this.go('orders'),
@@ -672,12 +754,7 @@ class Component extends DCLogic {
         { k: 'Model', v: aiOn ? st.ai.model : 'No API key — put OPENROUTER_API_KEY in .env and reload' },
       ],
 
-      launchAgent: () => {
-        this.setState({ screen: 'dashboard' });
-        this.pushFeed('agent', 'Agent launched — ' + (aiOn ? 'running on ' + st.ai.model : 'idle until an API key is set'));
-        this.toast('Agent is live', aiOn ? ('Running on ' + st.ai.model) : 'Add OPENROUTER_API_KEY to .env, then reload this page');
-        if (st.rewrite === 'now' && aiOn) this.genAllDesc();
-      },
+      launchAgent: () => this.launchAgent(),
     };
   }
 }

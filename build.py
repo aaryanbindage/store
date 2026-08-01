@@ -131,6 +131,25 @@ def main() -> None:
 
     # The markup hardcodes the old demo's model name; bind it to the live one.
     html = html.replace("Gemini writes in your", "{{ agentName }} writes in your")
+
+    # The login fields shipped as unbound defaults ("demo@..."), so nothing the
+    # user typed ever reached the logic. Bind them to real state.
+    LOGIN = {
+        '<input class="input" type="email" sc-camel-default-value="demo@kilnember.com">':
+            '<input class="input" type="email" placeholder="you@example.com" '
+            'value="{{ loginEmail }}" sc-camel-on-change="{{ setLoginEmail }}">',
+        '<input class="input" type="password" sc-camel-default-value="••••••••••">':
+            '<input class="input" type="password" placeholder="At least 8 characters" '
+            'value="{{ loginPassword }}" sc-camel-on-change="{{ setLoginPassword }}">',
+        '>Sign in<': '>{{ signInLabel }}<',
+        'Demo build — any credentials work.':
+            'New here? Enter an email and password, then press “Set up your agent”.',
+    }
+    for old, new in LOGIN.items():
+        if old in html:
+            html = html.replace(old, new)
+        else:
+            print("warning: login markup not found —", old[:52])
     if "Gemini" in html.split("data-dc-script")[0]:
         print("warning: 'Gemini' still present in markup")
 
@@ -138,7 +157,6 @@ def main() -> None:
     # the markup as literal text. Swap each for a binding so the page shows the
     # real state instead of a demo that never existed.
     DEMO_COPY = {
-        "Demo build — any credentials work.": "{{ buildNote }}",
         "Kiln &amp; Ember · live since June": "{{ brandLine }}",
         "Skip — use demo store": "{{ skipLabel }}",
         "Order #1187 · USPS pickup 3:30 PM": "{{ nextOrderLine }}",
@@ -157,8 +175,6 @@ def main() -> None:
     # Prototype prop defaults and prefilled form values from the demo export.
     DEMO_COPY.update({
         '&quot;default&quot;: &quot;Kiln &amp; Ember&quot;': '&quot;default&quot;: &quot;&quot;',
-        'sc-camel-default-value="demo@kilnember.com"': 'placeholder="you@yourstore.com"',
-        'sc-camel-default-value="••••••••••"': 'placeholder="••••••••"',
     })
 
     missed = []
