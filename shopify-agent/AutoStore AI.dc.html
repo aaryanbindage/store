@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-3ff3bfce-e8b3-4417-8cbd-4ceb8cca7d8a/styles.css">
+<script src="_ds/modernist-3ff3bfce-e8b3-4417-8cbd-4ceb8cca7d8a/_ds_bundle.js"></script>
+<style>
+html,body{margin:0;height:100%}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
+@keyframes toastIn{from{transform:translateX(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes working{0%{width:8%}50%{width:86%}100%{width:8%}}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--color-neutral-400)}::-webkit-scrollbar-track{background:transparent}
+</style>
+</helmet>
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Login" style="display:grid;grid-template-columns:1fr 1fr;min-height:100vh;background:var(--color-bg)">
+  <div style="display:flex;flex-direction:column;padding:40px 64px">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:18px;letter-spacing:.02em">AUTOSTORE<span style="color:var(--color-accent)"> AI</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:400px">
+      <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:12px">Agentic commerce · Shopify</div>
+      <h1 style="font-size:44px;margin:0 0 16px">The store runs itself. You take the credit.</h1>
+      <p class="text-muted" style="font-size:15px;margin-bottom:32px">One agent that writes, prices, ships and answers — and asks before it matters.</p>
+      <div class="field" style="margin-bottom:14px"><label>Email</label><input class="input" type="email" defaultValue="demo@kilnember.com"></div>
+      <div class="field" style="margin-bottom:20px"><label>Password</label><input class="input" type="password" defaultValue="••••••••••"></div>
+      <button class="btn btn-primary btn-block" onClick="{{ signIn }}">Sign in<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
+      <div style="margin-top:16px;font-size:13px">No account? <a style="cursor:pointer" onClick="{{ startOnboarding }}">Set up your agent →</a></div>
+      <div class="text-muted" style="font-size:11px;margin-top:32px">Demo build — any credentials work.</div>
+    </div>
+  </div>
+  <div style="background:var(--color-accent);color:var(--color-bg);display:flex;flex-direction:column;justify-content:space-between;padding:40px 48px">
+    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase">Kiln &amp; Ember · live since June</div>
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:clamp(40px,5vw,72px);line-height:1.02;letter-spacing:-.015em;text-transform:uppercase">Ship every order on time.</div>
+    <div style="display:flex;gap:32px;font-size:12px;border-top:2px solid color-mix(in srgb, var(--color-bg) 40%, transparent);padding-top:16px">
+      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">47</span><br>agent actions today</div>
+      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">9/11</span><br>tickets resolved</div>
+      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">0</span><br>missed deadlines</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isOnboarding }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Onboarding" style="min-height:100vh;background:var(--color-bg);display:flex;flex-direction:column">
+  <div class="nav"><span class="nav-brand">AUTOSTORE<span style="color:var(--color-accent)"> AI</span></span><span style="font-size:11px;letter-spacing:.1em;font-variant-numeric:tabular-nums">STEP 0{{ onbStep }} / 04</span></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 24px;margin-top:12px">
+    <sc-for list="{{ onbCells }}" as="c" hint-placeholder-count="4"><div style="height:4px;background:{{ c.bg }}"></div></sc-for>
+  </div>
+  <div style="flex:1;max-width:760px;width:100%;margin:0 auto;padding:48px 24px 80px">
+
+    <sc-if value="{{ onb1 }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Agent setup — connect</div>
+      <h2 style="margin-bottom:10px">Point me at your store.</h2>
+      <p class="text-muted" style="max-width:520px">I'll read your catalog, open orders and settings. Nothing changes until you approve it.</p>
+      <hr class="hr">
+      <div style="display:flex;gap:12px;align-items:flex-end;max-width:560px">
+        <div class="field" style="flex:1"><label>Shopify store URL</label><input class="input" value="{{ onbUrl }}" onChange="{{ setOnbUrl }}" placeholder="your-store.myshopify.com"></div>
+        <button class="btn btn-primary" onClick="{{ connectStore }}" disabled="{{ onbConnected }}">{{ connectLabel }}</button>
+      </div>
+      <sc-if value="{{ onbConnected }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:20px;border-top:2px solid var(--color-accent);background:var(--color-surface);padding:16px;max-width:560px">
+        <div style="display:flex;gap:8px;align-items:center;font-weight:800;font-family:var(--font-heading);font-size:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2.5"><path d="M20 6 9 17l-5-5"></path></svg>Connected to kiln-ember.myshopify.com</div>
+        <div class="text-muted" style="font-size:13px;margin-top:6px">6 products · 14 open orders · Shopify Basic · USPS + UPS connected</div>
+      </div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ onb2 }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Agent setup — catalog</div>
+      <h2 style="margin-bottom:10px">I need three things from you.</h2>
+      <div style="border-top:2px solid var(--color-divider);border-bottom:2px solid var(--color-divider);padding:14px 0;margin:18px 0;display:flex;gap:12px">
+        <div style="width:8px;background:var(--color-accent);flex:none"></div>
+        <p style="margin:0;font-size:14px;max-width:560px">I read your catalog. <strong>Three products are missing photos</strong> and four have thin descriptions. Upload photos where you have them — I'll rewrite the copy and flag the rest for a shoot list.</p>
+      </div>
+      <sc-for list="{{ onbAssets }}" as="a" hint-placeholder-count="4">
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--color-divider)">
+        <div class="grayscale" style="width:40px;height:40px;background:var(--color-neutral-300);display:grid;place-items:center;font-family:var(--font-heading);font-weight:800;font-size:15px;flex:none">{{ a.init }}</div>
+        <div style="flex:1"><div style="font-weight:800;font-family:var(--font-heading);font-size:14px">{{ a.name }}</div><div class="text-muted" style="font-size:12px">{{ a.sku }}</div></div>
+        <span class="tag {{ a.tagClass }}">{{ a.tagLabel }}</span>
+        <sc-if value="{{ a.needsPhoto }}" hint-placeholder-val="{{ false }}"><button class="btn btn-secondary" style="font-size:12px" onClick="{{ a.upload }}" disabled="{{ a.uploaded }}">{{ a.uploadLabel }}</button></sc-if>
+      </div>
+      </sc-for>
+      <div style="margin-top:24px;display:flex;align-items:center;gap:16px">
+        <span style="font-size:13px;font-weight:800;font-family:var(--font-heading)">Thin descriptions</span>
+        <div class="seg">
+          <label class="seg-opt"><input type="radio" name="rw" checked="{{ rwNow }}" onChange="{{ setRwNow }}"><span>Rewrite all now</span></label>
+          <label class="seg-opt"><input type="radio" name="rw" checked="{{ rwReview }}" onChange="{{ setRwReview }}"><span>I'll review each</span></label>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ onb3 }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Agent setup — autonomy</div>
+      <h2 style="margin-bottom:10px">How much rope do I get?</h2>
+      <p class="text-muted" style="max-width:520px">You can change this any time. Everything the agent does is logged either way.</p>
+      <hr class="hr">
+      <div style="margin-bottom:8px;font-size:13px;font-weight:800;font-family:var(--font-heading)">Automation level</div>
+      <div class="seg">
+        <sc-for list="{{ autoLevels }}" as="l" hint-placeholder-count="3"><label class="seg-opt"><input type="radio" name="auto" checked="{{ l.active }}" onChange="{{ l.pick }}"><span>{{ l.label }}</span></label></sc-for>
+      </div>
+      <p class="text-muted" style="font-size:13px;margin-top:10px;max-width:520px">{{ autoExplain }}</p>
+      <div style="margin:28px 0 8px;font-size:13px;font-weight:800;font-family:var(--font-heading)">Voice</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ voices }}" as="v" hint-placeholder-count="3">
+        <label class="radio"><input type="radio" name="voice" checked="{{ v.active }}" onChange="{{ v.pick }}"><span class="dot"></span><span><strong>{{ v.label }}</strong> — <span class="text-muted">"{{ v.sample }}"</span></span></label>
+        </sc-for>
+      </div>
+      <div style="margin:28px 0 8px;font-size:13px;font-weight:800;font-family:var(--font-heading)">Guardrails</div>
+      <div style="display:flex;gap:16px;max-width:420px">
+        <div class="field" style="flex:1"><label>Auto-refund cap ($)</label><input class="input" value="{{ refundCap }}" onChange="{{ setRefundCap }}"></div>
+        <div class="field" style="flex:1"><label>Max discount (%)</label><input class="input" value="{{ discountCap }}" onChange="{{ setDiscountCap }}"></div>
+      </div>
+      <p class="text-muted" style="font-size:12px;margin-top:6px">Above either cap, the agent drafts and waits for you.</p>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ onb4 }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Agent setup — launch</div>
+      <h2 style="margin-bottom:10px">Ready when you are.</h2>
+      <hr class="hr">
+      <sc-for list="{{ onbSummary }}" as="s" hint-placeholder-count="5">
+      <div style="display:grid;grid-template-columns:180px 1fr;padding:10px 0;border-bottom:1px solid var(--color-divider);font-size:14px"><span class="text-muted" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding-top:2px">{{ s.k }}</span><span>{{ s.v }}</span></div>
+      </sc-for>
+      <div style="border-top:2px solid var(--color-accent);background:var(--color-surface);padding:16px;margin-top:20px;font-size:13px;max-width:560px">First 24 hours run in <strong>shadow mode</strong> — the agent drafts everything and sends nothing, so you can see how it thinks before it acts.</div>
+    </div>
+    </sc-if>
+
+    <div style="display:flex;gap:12px;margin-top:40px;border-top:2px solid var(--color-divider);padding-top:20px">
+      <sc-if value="{{ onbCanBack }}" hint-placeholder-val="{{ false }}"><button class="btn btn-secondary" onClick="{{ onbBack }}">Back</button></sc-if>
+      <sc-if value="{{ onbNotLast }}" hint-placeholder-val="{{ true }}"><button class="btn btn-primary" onClick="{{ onbNext }}" disabled="{{ onbNextDisabled }}">Continue<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></sc-if>
+      <sc-if value="{{ onb4 }}" hint-placeholder-val="{{ false }}"><button class="btn btn-primary" onClick="{{ launchAgent }}">Launch agent<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></button></sc-if>
+      <a style="cursor:pointer;margin-left:auto;font-size:13px;align-self:center" onClick="{{ signIn }}">Skip — use demo store</a>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+<div style="height:100vh;display:flex;flex-direction:column;background:var(--color-bg);overflow:hidden">
+  <div class="nav" style="padding:10px 20px;flex:none">
+    <span class="nav-brand" style="font-size:16px">AUTOSTORE<span style="color:var(--color-accent)"> AI</span></span>
+    <span class="tag tag-neutral" style="font-variant-numeric:tabular-nums">{{ storeName }} · Shopify</span>
+    <span style="flex:1"></span>
+    <a style="cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;font-family:var(--font-heading);text-decoration:none" onClick="{{ togglePanel }}"><span style="width:8px;height:8px;background:var(--color-accent);animation:pulse 1.6s infinite"></span>{{ agentChip }}</a>
+    <a style="cursor:pointer;position:relative;display:inline-flex;text-decoration:none" onClick="{{ togglePanel }}" title="Agent updates">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      <sc-if value="{{ hasBell }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-6px;right:-8px;background:var(--color-accent);color:var(--color-bg);font-size:9px;font-weight:800;min-width:14px;height:14px;display:grid;place-items:center;padding:0 3px;font-variant-numeric:tabular-nums">{{ bellCount }}</span></sc-if>
+    </a>
+    <span style="width:30px;height:30px;background:var(--color-text);color:var(--color-bg);display:grid;place-items:center;font-family:var(--font-heading);font-weight:800;font-size:11px">{{ storeInit }}</span>
+  </div>
+
+  <div style="flex:1;display:flex;overflow:hidden">
+    <div style="width:196px;flex:none;border-right:2px solid var(--color-divider);display:flex;flex-direction:column;padding:20px 0">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="7">
+      <a style="cursor:pointer;display:flex;gap:10px;align-items:baseline;padding:9px 20px;text-decoration:none;font-family:var(--font-heading);font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:{{ n.color }};background:{{ n.bg }}" onClick="{{ n.go }}"><span style="font-size:10px;font-variant-numeric:tabular-nums;opacity:.5">{{ n.num }}</span>{{ n.label }}<sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;background:var(--color-accent);color:var(--color-bg);font-size:9px;min-width:15px;height:15px;display:grid;place-items:center;padding:0 3px;font-variant-numeric:tabular-nums">{{ n.badge }}</span></sc-if></a>
+      </sc-for>
+      <div style="margin-top:auto;padding:16px 20px;border-top:2px solid var(--color-divider)">
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent)">Growth plan</div>
+        <div class="text-muted" style="font-size:12px;margin-top:2px">Unlimited actions</div>
+      </div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:28px 36px 64px">
+      <div style="max-width:1080px">
+
+      <sc-if value="{{ scDashboard }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Dashboard">
+        <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Overview · Aug 1</div>
+        <h2 style="margin:6px 0 0">{{ greeting }}</h2>
+
+        <div style="border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);margin-top:28px;padding:36px 0;display:flex;gap:40px;align-items:flex-end;justify-content:space-between">
+          <div>
+            <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Next ship deadline</div>
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:76px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ countdown }}</div>
+            <div class="text-muted" style="font-size:13px;margin-top:10px">Order #1187 · USPS pickup 3:30 PM</div>
+          </div>
+          <button class="btn btn-primary" onClick="{{ goOrders }}">Open orders</button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:2px solid var(--color-divider)">
+          <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
+          <div style="padding:20px 20px 20px 0;border-left:{{ s.bl }};padding-left:{{ s.pl }}">
+            <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ s.label }}</div>
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:28px;font-variant-numeric:tabular-nums;margin-top:4px">{{ s.value }}</div>
+          </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:32px;max-width:680px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between"><h6 style="margin:0">Due today</h6><a style="cursor:pointer;font-size:12px" onClick="{{ goOrders }}">All orders →</a></div>
+          <table class="table" style="margin-top:10px">
+            <thead><tr><th>Order</th><th>Deadline</th><th style="text-align:right"></th></tr></thead>
+            <tbody>
+              <sc-for list="{{ dueOrders }}" as="o" hint-placeholder-count="3">
+              <tr><td style="font-variant-numeric:tabular-nums;font-weight:800;font-family:var(--font-heading)">{{ o.id }} <span class="text-muted" style="font-weight:400;font-family:var(--font-body)">{{ o.customer }}</span></td><td style="font-variant-numeric:tabular-nums">{{ o.due }}</td><td style="text-align:right"><span class="tag" style="{{ o.tagStyle }}">{{ o.statusLabel }}</span></td></tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ scProducts }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Products">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Catalog</div><h2 style="margin:6px 0 0">Products</h2></div>
+          <button class="btn btn-primary" onClick="{{ genAllDesc }}">Generate all missing copy<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path></svg></button>
+        </div>
+        <hr class="hr">
+        <table class="table">
+          <thead><tr><th style="width:34%">Product</th><th>Price</th><th>Stock</th><th style="width:38%">AI description</th><th></th></tr></thead>
+          <tbody>
+            <sc-for list="{{ products }}" as="p" hint-placeholder-count="6">
+            <tr>
+              <td><div style="display:flex;gap:12px;align-items:center"><div class="grayscale" style="width:38px;height:38px;background:var(--color-neutral-300);display:grid;place-items:center;font-family:var(--font-heading);font-weight:800;font-size:14px;flex:none">{{ p.init }}</div><div><div style="font-weight:800;font-family:var(--font-heading);font-size:14px">{{ p.name }}</div><div class="text-muted" style="font-size:11px;font-variant-numeric:tabular-nums">{{ p.sku }}</div></div></div></td>
+              <td style="font-variant-numeric:tabular-nums">{{ p.price }}</td>
+              <td style="font-variant-numeric:tabular-nums;color:{{ p.stockColor }}">{{ p.stock }}</td>
+              <td><span class="tag {{ p.tagClass }}">{{ p.tagLabel }}</span><div class="text-muted" style="font-size:12px;margin-top:4px;font-style:{{ p.descStyle }}">{{ p.desc }}</div></td>
+              <td style="text-align:right"><button class="btn btn-ghost" style="font-size:12px" onClick="{{ p.gen }}" disabled="{{ p.busy }}">{{ p.genLabel }}</button></td>
+            </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ scOrders }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Orders">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Fulfilment</div><h2 style="margin:6px 0 0">Orders</h2></div>
+          <div style="font-size:13px;font-variant-numeric:tabular-nums"><span style="font-weight:800;font-family:var(--font-heading);color:var(--color-accent-700)">{{ dueCount }} due today</span><span class="text-muted"> · cutoff 5:00 PM · agent pre-printed all labels</span></div>
+        </div>
+        <hr class="hr">
+        <table class="table">
+          <thead><tr><th>Order</th><th>Customer</th><th style="width:28%">Items</th><th>Total</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <sc-for list="{{ orders }}" as="o" hint-placeholder-count="5">
+            <tr>
+              <td style="font-variant-numeric:tabular-nums;font-weight:800;font-family:var(--font-heading)">{{ o.id }}</td>
+              <td>{{ o.customer }}</td>
+              <td style="font-size:13px">{{ o.items }}</td>
+              <td style="font-variant-numeric:tabular-nums">{{ o.total }}</td>
+              <td style="font-variant-numeric:tabular-nums;font-size:13px">{{ o.due }}</td>
+              <td><span class="tag" style="{{ o.tagStyle }}">{{ o.statusLabel }}</span></td>
+              <td style="text-align:right"><sc-if value="{{ o.canShip }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost" style="font-size:12px" onClick="{{ o.ship }}">Mark shipped</button></sc-if></td>
+            </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <div style="border-top:2px solid var(--color-accent);background:var(--color-surface);padding:14px 16px;margin-top:24px;display:flex;gap:12px;align-items:center;max-width:640px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" style="flex:none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <div style="font-size:13px"><strong>Agent watch:</strong> if #1187 isn't scanned by 3:10 PM, I'll book a UPS pickup as backup and email you.</div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ scMarketing }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Marketing">
+        <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Content studio</div><h2 style="margin:6px 0 0">Marketing</h2></div>
+        <hr class="hr">
+        <div style="display:grid;grid-template-columns:340px 1fr;gap:36px">
+          <div>
+            <div style="font-size:13px;font-weight:800;font-family:var(--font-heading);margin-bottom:8px">Format</div>
+            <div class="seg" style="flex-wrap:wrap;display:inline-flex">
+              <sc-for list="{{ mkTypes }}" as="t" hint-placeholder-count="4"><label class="seg-opt" style="font-size:12px"><input type="radio" name="mk" checked="{{ t.active }}" onChange="{{ t.pick }}"><span>{{ t.label }}</span></label></sc-for>
+            </div>
+            <div class="field" style="margin-top:18px"><label>What's it about?</label><textarea class="input" value="{{ mkTopic }}" onChange="{{ setMkTopic }}" placeholder="e.g. Fall drop — six new pieces land Thursday" style="min-height:72px"></textarea></div>
+            <button class="btn btn-primary btn-block" onClick="{{ mkGenerate }}" disabled="{{ mkBusy }}">{{ mkBtnLabel }}<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path></svg></button>
+            <p class="text-muted" style="font-size:12px;margin-top:12px">Gemini writes in your <strong>{{ voice }}</strong> voice. You post — the agent never publishes marketing without you.</p>
+          </div>
+          <div>
+            <h6 style="margin:0 0 10px">Drafts</h6>
+            <sc-for list="{{ genItems }}" as="g" hint-placeholder-count="2">
+            <div class="card elev-sm" style="margin-bottom:14px">
+              <div style="display:flex;gap:8px;align-items:baseline"><span class="card-kicker">{{ g.type }}</span><span class="card-meta" style="margin-left:auto">{{ g.time }}</span></div>
+              <div style="font-size:14px;white-space:pre-line">{{ g.body }}</div>
+              <div style="display:flex;gap:8px;margin-top:4px"><button class="btn btn-secondary" style="font-size:12px" onClick="{{ g.copy }}">Copy</button><button class="btn btn-ghost" style="font-size:12px" onClick="{{ g.regen }}">Regenerate</button></div>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ scSupport }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Support">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Inbox</div><h2 style="margin:6px 0 0">Support</h2></div>
+          <div style="font-size:13px;font-variant-numeric:tabular-nums"><span style="font-weight:800;font-family:var(--font-heading)">9 of 11</span><span class="text-muted"> resolved autonomously this week · median 34s</span></div>
+        </div>
+        <hr class="hr">
+        <sc-for list="{{ tickets }}" as="tk" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--color-divider);cursor:pointer;background:{{ tk.bg }}" onClick="{{ tk.open }}">
+          <div style="width:8px;height:8px;background:{{ tk.dot }};flex:none"></div>
+          <div style="width:64px;flex:none;font-variant-numeric:tabular-nums;font-weight:800;font-family:var(--font-heading);font-size:13px">{{ tk.id }}</div>
+          <div style="flex:1"><div style="font-weight:800;font-family:var(--font-heading);font-size:14px">{{ tk.subject }}</div><div class="text-muted" style="font-size:12px">{{ tk.from }} · {{ tk.preview }}</div></div>
+          <span class="tag" style="{{ tk.tagStyle }}">{{ tk.statusLabel }}</span>
+          <span class="text-muted" style="font-size:11px;width:64px;text-align:right;font-variant-numeric:tabular-nums">{{ tk.time }}</span>
+        </div>
+        </sc-for>
+        <p class="text-muted" style="font-size:12px;margin-top:14px">The agent answers on its own inside your guardrails. Anything over the $50 refund cap — or anything it's unsure about — stops here for you.</p>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ scRequests }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Requests">
+        <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Ask the agent</div><h2 style="margin:6px 0 0">Requests</h2></div>
+        <p class="text-muted" style="font-size:14px;max-width:560px">Tell the agent what to change in plain language. It plans, executes, and reports back here.</p>
+        <hr class="hr">
+        <div style="display:flex;gap:12px;align-items:flex-start;max-width:720px">
+          <textarea class="input" value="{{ reqText }}" onChange="{{ setReqText }}" placeholder="e.g. Put the vase on sale at 20% off through Sunday" style="min-height:64px;flex:1"></textarea>
+          <button class="btn btn-primary" onClick="{{ submitRequest }}" disabled="{{ reqDisabled }}">Send<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
+        </div>
+        <div style="margin-top:28px;max-width:720px">
+          <sc-for list="{{ requests }}" as="r" hint-placeholder-count="3">
+          <div style="padding:16px 0;border-bottom:1px solid var(--color-divider)">
+            <div style="display:flex;gap:12px;align-items:baseline"><span style="font-weight:800;font-family:var(--font-heading);font-size:14px;flex:1">"{{ r.text }}"</span><span class="tag" style="{{ r.tagStyle }}">{{ r.statusLabel }}</span><span class="text-muted" style="font-size:11px;font-variant-numeric:tabular-nums">{{ r.time }}</span></div>
+            <div style="display:flex;gap:10px;margin-top:8px"><div style="width:8px;background:var(--color-neutral-300);flex:none"></div><p class="text-muted" style="margin:0;font-size:13px">{{ r.resp }}</p></div>
+          </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ scBilling }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Billing">
+        <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Subscription</div><h2 style="margin:6px 0 0">Billing</h2></div>
+        <hr class="hr">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+          <sc-for list="{{ plans }}" as="pl" hint-placeholder-count="3">
+          <div style="border:2px solid {{ pl.border }};padding:20px;display:flex;flex-direction:column;gap:10px;background:{{ pl.bg }}">
+            <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">{{ pl.name }}</span><sc-if value="{{ pl.current }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Current</span></sc-if></div>
+            <div><span style="font-family:var(--font-heading);font-weight:800;font-size:34px;font-variant-numeric:tabular-nums">{{ pl.price }}</span><span class="text-muted" style="font-size:13px">/mo</span></div>
+            <div style="font-size:13px;line-height:1.7;flex:1;white-space:pre-line">{{ pl.features }}</div>
+            <button class="btn {{ pl.btnClass }}" style="justify-content:flex-start" onClick="{{ pl.pick }}" disabled="{{ pl.current }}">{{ pl.btnLabel }}</button>
+          </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:24px;align-items:center;margin-top:24px;border-top:2px solid var(--color-divider);padding-top:16px;font-size:13px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+          <span>Visa ·· 4242 · next invoice <strong style="font-variant-numeric:tabular-nums">Sep 1 — $149.00</strong> · managed by Stripe</span>
+          <button class="btn btn-ghost" style="font-size:12px" onClick="{{ toastStripe }}">Open Stripe portal</button>
+        </div>
+      </div>
+      </sc-if>
+
+      </div>
+    </div>
+
+    <sc-if value="{{ panelOpen }}" hint-placeholder-val="{{ true }}">
+    <div style="width:312px;flex:none;border-left:2px solid var(--color-divider);display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:16px 18px 12px;border-bottom:2px solid var(--color-divider);flex:none">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="width:9px;height:9px;background:var(--color-accent);animation:pulse 1.6s infinite"></span>
+          <span style="font-family:var(--font-heading);font-weight:800;font-size:13px;letter-spacing:.06em">AGENT — LIVE</span>
+          <button class="btn btn-ghost btn-icon" style="margin-left:auto;width:28px;height:28px" onClick="{{ toggleFeed }}" title="Pause feed">{{ pauseGlyph }}</button>
+          <button class="btn btn-ghost btn-icon" style="width:28px;height:28px" onClick="{{ togglePanel }}" title="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+        </div>
+        <div style="margin-top:12px">
+          <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">Current task</div>
+          <div style="font-size:13px;font-weight:800;font-family:var(--font-heading);margin-top:3px">{{ currentTask }}</div>
+          <div style="height:3px;background:var(--color-neutral-300);margin-top:8px"><div style="height:3px;background:var(--color-accent);animation:working 6s ease-in-out infinite"></div></div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:6px 18px">
+        <sc-for list="{{ feed }}" as="f" hint-placeholder-count="6">
+        <div style="padding:10px 0;border-bottom:1px solid var(--color-divider)">
+          <div style="display:flex;gap:8px;align-items:baseline"><span style="font-size:9px;letter-spacing:.06em;font-variant-numeric:tabular-nums;color:var(--color-accent);font-weight:800">{{ f.t }}</span><span class="text-muted" style="font-size:9px;letter-spacing:.1em;text-transform:uppercase">{{ f.kind }}</span></div>
+          <div style="font-size:12.5px;margin-top:3px;line-height:1.45">{{ f.text }}</div>
+        </div>
+        </sc-for>
+      </div>
+      <div style="flex:none;border-top:2px solid var(--color-divider);padding:12px 18px;display:flex;justify-content:space-between;font-size:11px;font-variant-numeric:tabular-nums"><span class="text-muted">Actions today</span><strong style="font-family:var(--font-heading)">{{ actionCount }}</strong></div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ ticketOpen }}" hint-placeholder-val="{{ false }}">
+<div class="dialog-backdrop" style="z-index:60" onClick="{{ closeTicket }}">
+  <div class="dialog" style="width:min(560px,100%)" onClick="{{ stop }}">
+    <div style="display:flex;align-items:baseline;gap:10px"><span class="dialog-title">{{ tkId }} — {{ tkSubject }}</span><span class="tag" style="{{ tkTagStyle }}">{{ tkStatusLabel }}</span><button class="btn btn-ghost btn-icon" style="margin-left:auto;width:28px;height:28px" onClick="{{ closeTicket }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div>
+    <div style="border-left:2px solid var(--color-divider);padding-left:12px">
+      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ tkFrom }} wrote</div>
+      <p style="font-size:14px;margin:4px 0 0">{{ tkMsg }}</p>
+    </div>
+    <sc-if value="{{ tkHasDraft }}" hint-placeholder-val="{{ false }}">
+    <div style="border-top:2px solid var(--color-accent);background:var(--color-bg);padding:12px">
+      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent)">Agent draft — {{ tkNote }}</div>
+      <p style="font-size:14px;margin:6px 0 0">{{ tkDraft }}</p>
+    </div>
+    </sc-if>
+    <div class="dialog-actions" style="justify-content:flex-start">
+      <sc-if value="{{ tkHasDraft }}" hint-placeholder-val="{{ false }}"><button class="btn btn-primary" onClick="{{ approveDraft }}">Approve &amp; send</button><button class="btn btn-secondary" onClick="{{ takeOver }}">Take over</button></sc-if>
+      <sc-if value="{{ tkResolved }}" hint-placeholder-val="{{ false }}"><span class="text-muted" style="font-size:13px">Resolved autonomously — no action needed.</span></sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<div style="position:fixed;top:58px;right:16px;z-index:80;display:flex;flex-direction:column;gap:10px;width:320px;pointer-events:none">
+  <sc-for list="{{ toasts }}" as="ts" hint-placeholder-count="0">
+  <div class="elev-md" style="pointer-events:auto;background:var(--color-bg);border:1px solid var(--color-divider);border-top:3px solid var(--color-accent);padding:12px 14px;animation:toastIn .22s ease">
+    <div style="display:flex;gap:8px;align-items:baseline"><span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);font-weight:800">Agent update</span><button class="btn btn-ghost btn-icon" style="margin-left:auto;width:20px;height:20px" onClick="{{ ts.close }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div>
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:13px;margin-top:2px">{{ ts.title }}</div>
+    <div class="text-muted" style="font-size:12px;margin-top:2px">{{ ts.body }}</div>
+  </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;login&quot;, &quot;options&quot;: [&quot;login&quot;, &quot;onboarding&quot;, &quot;dashboard&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototype&quot;}, &quot;storeName&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Kiln &amp; Ember&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototype&quot;}, &quot;agentFeedLive&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Agent&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const h = 3600000, m = 60000;
+    this.FEED_SCRIPT = [
+      { kind: 'seo', text: 'Rewrote SEO title for Ash Glaze Mug — A/B test started', toast: null },
+      { kind: 'support', text: 'Answered #1042 (address change) — confirmed with customer in 38s', toast: null },
+      { kind: 'marketing', text: 'Generated 3 Instagram captions for the fall drop', toast: { title: 'Marketing drafts ready', body: '3 captions waiting in Marketing' } },
+      { kind: 'pricing', text: 'Repriced Wick Trimmer $14.00 → $12.50 to match competitor', toast: null },
+      { kind: 'support', text: 'Ticket #1044 refund ($76) exceeds your $50 cap — escalated', toast: { title: 'Agent needs your approval', body: 'Ticket #1044 refund is over the $50 cap' } },
+      { kind: 'inventory', text: 'Low stock: Oak & Amber Candle (6 left) — reorder email drafted', toast: null },
+      { kind: 'marketing', text: 'Abandoned-cart emails sent to 4 customers · avg cart $41', toast: { title: 'Recovery emails sent', body: '4 abandoned carts nudged' } },
+      { kind: 'orders', text: 'Synced 2 new orders from Shopify — deadlines calculated', toast: null },
+    ];
+    this.TASKS = ['Watching order #1187 — pickup 3:30 PM', 'Optimizing catalog SEO', 'Monitoring support inbox', 'Drafting fall campaign copy'];
+    this.state = {
+      screen: null, onbStep: 1, panelOpen: true, feedPaused: false,
+      now: Date.now(), cutoff: Date.now() + 1 * h + 41 * m + 22000,
+      toasts: [], bellCount: 0, actionCount: 47, feedIdx: 0, taskIdx: 0,
+      feed: [
+        { t: '2:41 PM', kind: 'orders', text: 'Packed slip + label printed for #1187 — USPS Priority' },
+        { t: '2:28 PM', kind: 'support', text: 'Answered #1041 (ships to Canada?) — resolved in 21s' },
+        { t: '2:12 PM', kind: 'seo', text: 'Meta descriptions refreshed on 4 product pages' },
+        { t: '1:56 PM', kind: 'pricing', text: 'Held price on Ember Vase — demand steady, no change needed' },
+      ],
+      products: [
+        { sku: 'KE-101', name: 'Ash Glaze Mug', price: '$28.00', stock: 24, st: 'generated', desc: 'Hand-thrown stoneware dipped in a matte ash glaze — no two pours alike.' },
+        { sku: 'KE-204', name: 'Oak & Amber Candle 8oz', price: '$24.00', stock: 6, st: 'generated', desc: 'Smoked oak and amber resin, a 40-hour burn in a reusable ceramic vessel.' },
+        { sku: 'KE-112', name: 'Birch Taper Set (4)', price: '$18.00', stock: 40, st: 'draft', desc: '', final: 'Four hand-dipped birch tapers — dripless, unscented, boxed in kraft.' },
+        { sku: 'KE-131', name: 'Ember Ceramic Vase', price: '$52.00', stock: 12, st: 'draft', desc: '', final: 'Wheel-thrown in ember-red slip — the one piece we let carry color.' },
+        { sku: 'KE-301', name: 'Wick Trimmer, Matte Black', price: '$12.50', stock: 31, st: 'generated', desc: 'Powder-coated steel, weighted to sit flat. Keeps every wick at ¼ inch.' },
+        { sku: 'KE-140', name: 'Smoke Grey Carafe', price: '$46.00', stock: 9, st: 'draft', final: 'A smoke-grey carafe for water, wine, or the morning pour-over.', desc: '' },
+      ],
+      orders: [
+        { id: '#1187', customer: 'Maya Rojas', items: 'Ash Glaze Mug ×2', total: '$56.00', st: 'urgent' },
+        { id: '#1186', customer: 'Devon Clarke', items: 'Oak & Amber Candle', total: '$24.00', st: 'due', due: 'Today · 5:00 PM' },
+        { id: '#1185', customer: 'Amara Okafor', items: 'Birch Taper Set, Smoke Grey Carafe', total: '$64.00', st: 'due', due: 'Today · 5:00 PM' },
+        { id: '#1184', customer: 'Tom Hendricks', items: 'Ember Ceramic Vase', total: '$52.00', st: 'ok', due: 'Tomorrow · 12:00 PM' },
+        { id: '#1183', customer: 'Lena Fischer', items: 'Wick Trimmer', total: '$12.50', st: 'shipped', due: 'Shipped 11:02 AM' },
+        { id: '#1182', customer: 'Ana Duarte', items: 'Ash Glaze Mug', total: '$28.00', st: 'shipped', due: 'Shipped 9:47 AM' },
+      ],
+      tickets: [
+        { id: '#1044', from: 'Jordan P.', subject: 'Carafe arrived cracked', preview: 'Refund $76 — over your $50 auto-cap', st: 'human', time: '12m ago', msg: 'Hi — my carafe arrived cracked down one side. I\'d like a refund please. Order #1181, $76 total.', draft: 'Jordan — so sorry the carafe arrived cracked. I can ship a replacement tomorrow, or refund the full $76 — your choice. Either way, no need to return the damaged one.', note: 'refund exceeds $50 cap' },
+        { id: '#1043', from: 'Sam K.', subject: 'Candle burns unevenly', preview: 'Reply drafted — awaiting your approval', st: 'draft', time: '41m ago', msg: 'My Oak & Amber candle tunnels down the middle and wastes half the wax. Is this normal?', draft: 'Sam — that\'s tunneling, and it\'s fixable: let the first burn run 3–4 hours so the full surface melts. If it keeps tunneling after that, I\'ll send a replacement on us.', note: 'first-burn advice, low risk' },
+        { id: '#1042', from: 'Priya N.', subject: 'Change shipping address', preview: 'Resolved autonomously in 38s', st: 'resolved', time: '1h ago', msg: 'Can you send order #1185 to my office instead? 44 Fraser Ave, Toronto.', draft: '' },
+        { id: '#1041', from: 'Chris B.', subject: 'Do you ship to Canada?', preview: 'Resolved autonomously in 21s', st: 'resolved', time: '2h ago', msg: 'Do you ship to Canada, and what does it cost?', draft: '' },
+        { id: '#1040', from: 'Dana W.', subject: 'Discount code not working', preview: 'Resolved autonomously in 45s', st: 'resolved', time: '4h ago', msg: 'FALL10 says expired but your Instagram posted it yesterday?', draft: '' },
+      ],
+      requests: [
+        { text: 'Raise candle prices 5%, skip anything on sale', st: 'progress', time: '1:12 PM', resp: 'Repricing 2 of 4 candle SKUs now — sale items excluded. Done in ~2 min.' },
+        { text: 'Set up abandoned-cart recovery emails', st: 'done', time: 'Yesterday', resp: 'Live — 3-email sequence in your Warm voice. First send already recovered $82.' },
+      ],
+      genItems: [
+        { type: 'Instagram post', time: '2:18 PM', body: 'The kiln\'s been busy. Six new pieces land Thursday — ash glazes, smoked oak, and one carafe we almost kept for ourselves. Link in bio.' },
+      ],
+      selTicket: null, reqText: '', mkTopic: '', mkType: 'Instagram post', mkBusy: false,
+      onbUrl: 'kiln-ember.myshopify.com', onbConnected: false, rewrite: 'now',
+      autoLevel: 'Approve first', voice: 'Warm', refundCap: '50', discountCap: '20',
+      uploads: {}, plan: 'Growth',
+    };
+  }
+  componentDidMount() {
+    this.clock = setInterval(() => {
+      let s = { now: Date.now() };
+      if (this.state.cutoff - Date.now() < 1000) s.cutoff = Date.now() + 2.5 * 3600000;
+      this.setState(s);
+    }, 1000);
+    this.ticker = setInterval(() => {
+      const live = this.props.agentFeedLive ?? true;
+      if (!live || this.state.feedPaused || this.curScreen() === 'login' || this.curScreen() === 'onboarding') return;
+      const e = this.FEED_SCRIPT[this.state.feedIdx % this.FEED_SCRIPT.length];
+      this.pushFeed(e.kind, e.text);
+      this.setState(s => ({ feedIdx: s.feedIdx + 1, taskIdx: s.taskIdx + 1, bellCount: s.bellCount + 1, actionCount: s.actionCount + 1 }));
+      if (e.toast) this.toast(e.toast.title, e.toast.body);
+    }, 9000);
+  }
+  componentWillUnmount() { clearInterval(this.clock); clearInterval(this.ticker); }
+  curScreen() { return this.state.screen ?? (this.props.startScreen ?? 'login'); }
+  timeNow() { return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
+  pushFeed(kind, text) { this.setState(s => ({ feed: [{ t: this.timeNow(), kind, text }, ...s.feed].slice(0, 30) })); }
+  toast(title, body) {
+    const id = Math.random().toString(36).slice(2);
+    this.setState(s => ({ toasts: [...s.toasts, { id, title, body }] }));
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 5200);
+  }
+  go(sc) { this.setState({ screen: sc, bellCount: sc === 'dashboard' ? this.state.bellCount : this.state.bellCount }); }
+  fmt(ms) {
+    if (ms < 0) ms = 0;
+    const p = n => String(n).padStart(2, '0');
+    return p(Math.floor(ms / 3600000)) + ':' + p(Math.floor(ms / 60000) % 60) + ':' + p(Math.floor(ms / 1000) % 60);
+  }
+  orderView(o) {
+    const T = {
+      urgent: { label: 'Ship now', style: { background: 'var(--color-accent)', color: 'var(--color-bg)' } },
+      due: { label: 'Due today', style: { background: 'var(--color-accent-100)', color: 'var(--color-accent-800)' } },
+      ok: { label: 'On track', style: { background: 'var(--color-neutral-100)', color: 'var(--color-neutral-800)' } },
+      shipped: { label: 'Shipped', style: { background: 'var(--color-neutral-200)', color: 'var(--color-neutral-600)' } },
+    }[o.st];
+    return { ...o, statusLabel: T.label, tagStyle: T.style, canShip: o.st !== 'shipped',
+      due: o.st === 'urgent' ? this.fmt(this.state.cutoff - this.state.now) : o.due,
+      ship: () => {
+        this.setState(s => ({ orders: s.orders.map(x => x.id === o.id ? { ...x, st: 'shipped', due: 'Shipped ' + this.timeNow() } : x) }));
+        this.pushFeed('orders', o.id + ' marked shipped — tracking emailed to ' + o.customer.split(' ')[0]);
+        this.toast(o.id + ' shipped', 'Tracking number emailed to ' + o.customer);
+        if (o.st === 'urgent') this.setState({ cutoff: Date.now() + 2.5 * 3600000 });
+      } };
+  }
+  ticketView(tk) {
+    const T = {
+      human: { label: 'Needs you', style: { background: 'var(--color-accent)', color: 'var(--color-bg)' }, dot: 'var(--color-accent)' },
+      draft: { label: 'Draft ready', style: { background: 'var(--color-accent-100)', color: 'var(--color-accent-800)' }, dot: 'var(--color-accent-400)' },
+      resolved: { label: 'AI resolved', style: { background: 'var(--color-neutral-100)', color: 'var(--color-neutral-800)' }, dot: 'var(--color-neutral-400)' },
+      sent: { label: 'Sent', style: { background: 'var(--color-neutral-200)', color: 'var(--color-neutral-600)' }, dot: 'var(--color-neutral-400)' },
+    }[tk.st];
+    return { ...tk, statusLabel: T.label, tagStyle: T.style, dot: T.dot,
+      bg: tk.st === 'human' ? 'color-mix(in srgb, var(--color-accent) 5%, transparent)' : 'transparent',
+      open: () => this.setState({ selTicket: tk.id }) };
+  }
+  renderVals() {
+    const st = this.state, screen = this.curScreen();
+    const storeName = this.props.storeName ?? 'Kiln & Ember';
+    const appScreens = ['dashboard', 'products', 'orders', 'marketing', 'support', 'requests', 'billing'];
+    const isApp = appScreens.includes(screen);
+    const hour = new Date().getHours();
+    const sel = st.tickets.find(t => t.id === st.selTicket);
+    const selV = sel ? this.ticketView(sel) : null;
+    const mkTypeList = ['Instagram post', 'Product description', 'Email campaign', 'Ad copy'];
+    const canned = {
+      'Instagram post': t => 'Still warm from the kiln. ' + (t || 'Six new pieces land Thursday') + ' — small batch, numbered, gone by the weekend. Link in bio.',
+      'Product description': t => (t || 'The fall collection') + ': hand-finished stoneware in ash and smoke. Built to be used daily and repaired, not replaced.',
+      'Email campaign': t => 'Subject: ' + (t || 'The fall drop') + ' — 48 hours early\n\nYou\'re on the short list. Shop the new pieces before they hit the storefront Thursday. No code needed — early access is the perk.',
+      'Ad copy': t => 'Headline: ' + (t || 'Ceramics with a memory') + '\nBody: Hand-thrown, small-batch, shipped same day. Free returns for 30 days.',
+    };
+    const withGenActions = g => ({ ...g,
+      copy: () => { try { navigator.clipboard.writeText(g.body); } catch (e) {} this.toast('Copied to clipboard', g.type + ' draft'); },
+      regen: () => { this.setState(s => ({ genItems: s.genItems.map(x => x === g ? { ...x, body: canned[g.type](st.mkTopic) + ' ' } : x) })); } });
+    const autoExplains = {
+      'Draft only': 'The agent prepares everything — copy, replies, prices — and you press every send button.',
+      'Approve first': 'Routine work runs on its own. Anything customer-facing or above a guardrail waits for one tap from you.',
+      'Full auto': 'The agent acts autonomously inside your guardrails and reports back. You review a daily digest.',
+    };
+    const voiceSamples = { Plain: 'Your order shipped. Tracking: 9400 1102.', Warm: 'Good news — your order\'s on its way. Track it here.', Bold: 'It\'s out the door. Watch the mail like a hawk.' };
+    const missingPhotos = ['KE-112', 'KE-131', 'KE-140'];
+    return {
+      storeName, storeInit: storeName.split(/[\s&]+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase(),
+      isLogin: screen === 'login', isOnboarding: screen === 'onboarding', isApp,
+      scDashboard: screen === 'dashboard', scProducts: screen === 'products', scOrders: screen === 'orders',
+      scMarketing: screen === 'marketing', scSupport: screen === 'support', scRequests: screen === 'requests', scBilling: screen === 'billing',
+      signIn: () => this.setState({ screen: 'dashboard' }),
+      startOnboarding: () => this.setState({ screen: 'onboarding', onbStep: 1 }),
+      greeting: (hour < 12 ? 'Good morning.' : hour < 18 ? 'Good afternoon.' : 'Good evening.'),
+      countdown: this.fmt(st.cutoff - st.now),
+      goOrders: () => this.go('orders'),
+      toastLabel: () => this.toast('Label sent to printer', '#1187 · USPS Priority · 1 of 1'),
+      navItems: [
+        ['dashboard', 'Dashboard'], ['products', 'Products'], ['orders', 'Orders'], ['marketing', 'Marketing'],
+        ['support', 'Support'], ['requests', 'Requests'], ['billing', 'Billing'],
+      ].map((n, i) => ({ num: '0' + (i + 1), label: n[1], go: () => this.go(n[0]),
+        color: screen === n[0] ? 'var(--color-accent)' : 'inherit',
+        bg: screen === n[0] ? 'color-mix(in srgb, var(--color-accent) 7%, transparent)' : 'transparent',
+        badge: n[0] === 'support' ? st.tickets.filter(t => t.st === 'human' || t.st === 'draft').length || false : false })),
+      stats: [
+        { label: 'Revenue today', value: '$1,284' },
+        { label: 'Orders due today', value: '3' },
+        { label: 'Tickets auto-resolved', value: '9/11' },
+      ].map((s, i) => ({ ...s, bl: i ? '2px solid var(--color-divider)' : 'none', pl: i ? '20px' : '0' })),
+      dueOrders: st.orders.filter(o => o.st === 'urgent' || o.st === 'due').map(o => this.orderView(o)),
+      orders: st.orders.map(o => this.orderView(o)),
+      dueCount: st.orders.filter(o => o.st === 'urgent' || o.st === 'due').length,
+      recentFeed: st.feed.slice(0, 4),
+      feed: st.feed,
+      products: st.products.map(p => {
+        const V = { generated: ['tag-neutral', 'AI written'], draft: ['tag-accent', 'Thin copy'], generating: ['tag-outline', 'Writing…'] }[p.st];
+        return { ...p, init: p.name[0], tagClass: V[0], tagLabel: V[1],
+          stockColor: p.stock < 10 ? 'var(--color-accent-700)' : 'inherit',
+          desc: p.st === 'generated' ? p.desc : (p.st === 'generating' ? 'Gemini is writing…' : 'No description — Shopify import was one line.'),
+          descStyle: p.st === 'generated' ? 'normal' : 'italic',
+          busy: p.st === 'generating', genLabel: p.st === 'generated' ? 'Regenerate' : (p.st === 'generating' ? 'Writing…' : 'Generate'),
+          gen: () => this.genDesc(p.sku) };
+      }),
+      genAllDesc: () => st.products.filter(p => p.st === 'draft').forEach((p, i) => setTimeout(() => this.genDesc(p.sku), i * 600)),
+      tickets: st.tickets.map(t => this.ticketView(t)),
+      ticketOpen: !!selV,
+      tkId: selV && selV.id, tkSubject: selV && selV.subject, tkFrom: selV && selV.from, tkMsg: selV && selV.msg,
+      tkDraft: selV && selV.draft, tkNote: selV && selV.note, tkTagStyle: selV && selV.tagStyle, tkStatusLabel: selV && selV.statusLabel,
+      tkHasDraft: !!(selV && (selV.st === 'human' || selV.st === 'draft')), tkResolved: !!(selV && (selV.st === 'resolved' || selV.st === 'sent')),
+      closeTicket: () => this.setState({ selTicket: null }),
+      stop: e => e.stopPropagation(),
+      approveDraft: () => {
+        const id = st.selTicket;
+        this.setState(s => ({ selTicket: null, tickets: s.tickets.map(t => t.id === id ? { ...t, st: 'sent', preview: 'Your approved reply was sent', time: 'now' } : t) }));
+        this.pushFeed('support', 'Approved reply sent on ' + id); this.toast('Reply sent', id + ' — customer notified');
+      },
+      takeOver: () => { this.setState({ selTicket: null }); this.toast('Ticket handed to you', 'Agent stepped back — thread opened in Shopify Inbox'); },
+      requests: st.requests.map(r => {
+        const T = { queued: ['Queued', { background: 'var(--color-neutral-100)', color: 'var(--color-neutral-800)' }],
+          progress: ['In progress', { background: 'var(--color-accent-100)', color: 'var(--color-accent-800)' }],
+          done: ['Done', { background: 'var(--color-neutral-200)', color: 'var(--color-neutral-600)' }] }[r.st];
+        return { ...r, statusLabel: T[0], tagStyle: T[1] };
+      }),
+      reqText: st.reqText, setReqText: e => this.setState({ reqText: e.target.value }), reqDisabled: !st.reqText.trim(),
+      submitRequest: () => this.submitRequest(),
+      mkTypes: mkTypeList.map(l => ({ label: l, active: st.mkType === l, pick: () => this.setState({ mkType: l }) })),
+      mkTopic: st.mkTopic, setMkTopic: e => this.setState({ mkTopic: e.target.value }),
+      mkBusy: st.mkBusy, mkBtnLabel: st.mkBusy ? 'Gemini is writing…' : 'Generate draft',
+      voice: st.voice,
+      mkGenerate: () => {
+        this.setState({ mkBusy: true });
+        setTimeout(() => {
+          this.setState(s => ({ mkBusy: false, genItems: [{ type: s.mkType, time: this.timeNow(), body: canned[s.mkType](s.mkTopic) }, ...s.genItems] }));
+          this.pushFeed('marketing', 'Drafted ' + st.mkType.toLowerCase() + (st.mkTopic ? ' — ' + st.mkTopic : ''));
+        }, 1400);
+      },
+      genItems: st.genItems.map(withGenActions),
+      plans: [
+        { name: 'Starter', price: '$49', features: '1 store\nAI product descriptions\n50 agent actions / day\nEmail support' },
+        { name: 'Growth', price: '$149', features: 'Everything in Starter\nMarketing autopilot\nSupport inbox automation\nUnlimited agent actions' },
+        { name: 'Scale', price: '$349', features: 'Everything in Growth\nMulti-store\nAPI access + custom guardrails\nPriority human escalation' },
+      ].map(p => ({ ...p, current: st.plan === p.name,
+        border: st.plan === p.name ? 'var(--color-accent)' : 'var(--color-divider)',
+        bg: st.plan === p.name ? 'color-mix(in srgb, var(--color-accent) 4%, transparent)' : 'transparent',
+        btnClass: st.plan === p.name ? 'btn-secondary' : 'btn-primary',
+        btnLabel: st.plan === p.name ? 'Current plan' : 'Switch to ' + p.name,
+        pick: () => { this.setState({ plan: p.name }); this.toast('Plan updated', p.name + ' — prorated via Stripe, effective now'); } })),
+      toastStripe: () => this.toast('Stripe portal', 'Would open billing.stripe.com in the real app'),
+      panelOpen: st.panelOpen, togglePanel: () => this.setState(s => ({ panelOpen: !s.panelOpen, bellCount: 0 })),
+      agentChip: st.feedPaused ? 'Agent paused' : 'Agent active',
+      hasBell: st.bellCount > 0, bellCount: st.bellCount,
+      toggleFeed: () => this.setState(s => ({ feedPaused: !s.feedPaused })),
+      pauseGlyph: st.feedPaused ? '▶' : '❚❚',
+      currentTask: st.feedPaused ? 'Paused — nothing runs until you resume' : this.TASKS[st.taskIdx % this.TASKS.length],
+      actionCount: st.actionCount,
+      toasts: st.toasts.map(t => ({ ...t, close: () => this.setState(s => ({ toasts: s.toasts.filter(x => x.id !== t.id) })) })),
+      onbStep: st.onbStep, onbCells: [1, 2, 3, 4].map(i => ({ bg: i <= st.onbStep ? 'var(--color-accent)' : 'var(--color-neutral-300)' })),
+      onb1: st.onbStep === 1, onb2: st.onbStep === 2, onb3: st.onbStep === 3, onb4: st.onbStep === 4,
+      onbCanBack: st.onbStep > 1, onbNotLast: st.onbStep < 4,
+      onbBack: () => this.setState(s => ({ onbStep: s.onbStep - 1 })),
+      onbNext: () => this.setState(s => ({ onbStep: s.onbStep + 1 })),
+      onbNextDisabled: st.onbStep === 1 && !st.onbConnected,
+      onbUrl: st.onbUrl, setOnbUrl: e => this.setState({ onbUrl: e.target.value }),
+      onbConnected: st.onbConnected, connectLabel: st.onbConnected ? 'Connected' : 'Connect',
+      connectStore: () => this.setState({ onbConnected: true }),
+      onbAssets: st.products.map(p => {
+        const needs = missingPhotos.includes(p.sku), up = st.uploads[p.sku];
+        return { name: p.name, sku: p.sku, init: p.name[0], needsPhoto: needs,
+          tagClass: needs ? (up ? 'tag-neutral' : 'tag-accent') : (p.st === 'draft' ? 'tag-outline' : 'tag-neutral'),
+          tagLabel: needs ? (up ? 'Photo added' : 'Photo missing') : (p.st === 'draft' ? 'Thin copy' : 'Ready'),
+          uploaded: !!up, uploadLabel: up ? 'IMG_02' + (31 + Object.keys(st.uploads).indexOf(p.sku)) + '.jpg ✓' : 'Upload photo',
+          upload: () => this.setState(s => ({ uploads: { ...s.uploads, [p.sku]: true } })) };
+      }),
+      rwNow: st.rewrite === 'now', rwReview: st.rewrite === 'review',
+      setRwNow: () => this.setState({ rewrite: 'now' }), setRwReview: () => this.setState({ rewrite: 'review' }),
+      autoLevels: ['Draft only', 'Approve first', 'Full auto'].map(l => ({ label: l, active: st.autoLevel === l, pick: () => this.setState({ autoLevel: l }) })),
+      autoExplain: autoExplains[st.autoLevel],
+      voices: ['Plain', 'Warm', 'Bold'].map(v => ({ label: v, active: st.voice === v, sample: voiceSamples[v], pick: () => this.setState({ voice: v }) })),
+      refundCap: st.refundCap, setRefundCap: e => this.setState({ refundCap: e.target.value }),
+      discountCap: st.discountCap, setDiscountCap: e => this.setState({ discountCap: e.target.value }),
+      onbSummary: [
+        { k: 'Store', v: 'kiln-ember.myshopify.com — 6 products, 14 open orders' },
+        { k: 'Catalog', v: Object.keys(st.uploads).length + ' of 3 photos uploaded · ' + (st.rewrite === 'now' ? 'agent rewrites thin copy now' : 'you review each rewrite') },
+        { k: 'Automation', v: st.autoLevel },
+        { k: 'Voice', v: st.voice },
+        { k: 'Guardrails', v: 'Refund cap $' + st.refundCap + ' · max discount ' + st.discountCap + '%' },
+        { k: 'Plan', v: 'Growth — 14-day trial, then $149/mo via Stripe' },
+      ],
+      launchAgent: () => {
+        this.setState({ screen: 'dashboard' });
+        this.pushFeed('agent', 'Agent launched in shadow mode — drafting only for 24h');
+        this.toast('Agent is live', 'Shadow mode for 24h — first drafts will appear in Support');
+      },
+    };
+  }
+  genDesc(sku) {
+    this.setState(s => ({ products: s.products.map(p => p.sku === sku ? { ...p, st: 'generating' } : p) }));
+    setTimeout(() => {
+      const p = this.state.products.find(x => x.sku === sku);
+      this.setState(s => ({ products: s.products.map(x => x.sku === sku ? { ...x, st: 'generated', desc: x.final || x.desc } : x) }));
+      this.pushFeed('seo', 'Wrote product description for ' + p.name);
+      this.toast('Description ready', p.name + ' — review it in Products');
+    }, 1600);
+  }
+  submitRequest() {
+    const text = this.state.reqText.trim();
+    if (!text) return;
+    const req = { text, st: 'queued', time: this.timeNow(), resp: 'Received — planning the change now.' };
+    this.setState(s => ({ reqText: '', requests: [req, ...s.requests] }));
+    this.pushFeed('request', 'New request from you: "' + text.slice(0, 60) + (text.length > 60 ? '…' : '') + '"');
+    setTimeout(() => this.setState(s => ({ requests: s.requests.map(r => r === req ? { ...r, st: 'progress', resp: 'Working on it — I\'ll confirm here and notify you when it\'s live.' } : r) })), 2500);
+    setTimeout(() => {
+      this.setState(s => ({ requests: s.requests.map(r => r.text === text && r.st === 'progress' ? { ...r, st: 'done', resp: 'Done. Changes are live on the storefront — rolled back in one tap if you change your mind.' } : r) }));
+      this.toast('Request completed', '"' + text.slice(0, 44) + (text.length > 44 ? '…' : '') + '" is live');
+      this.pushFeed('request', 'Completed your request: ' + text.slice(0, 50));
+    }, 8000);
+  }
+}
+</script>
+</body>
+</html>
