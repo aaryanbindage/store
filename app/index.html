@@ -12,17 +12,7 @@
 </head>
 <body>
 <x-dc>
-<helmet><style>
-.buy-btn{display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;min-height:60px;padding:18px 28px;margin:22px 0;
-  background:var(--color-accent);color:var(--color-bg);
-  font-family:var(--font-heading);font-weight:800;font-size:18px;letter-spacing:.01em;
-  text-decoration:none;border:2px solid var(--color-accent);cursor:pointer;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.buy-btn:hover{background:var(--color-bg);color:var(--color-accent)}
-.buy-btn:focus-visible{outline:3px solid var(--color-accent);outline-offset:3px}
-@media (max-width:640px){.buy-btn{min-height:64px;font-size:19px;padding:20px 22px}}
-</style>
+<helmet>
 <style>/* Modernist — design-system tokens and component classes. This file is the source of truth for the system's look; retune it here and see readme.md. */
 /* vietnamese */
 @font-face {
@@ -384,21 +374,23 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
     <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:400px">
       <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:12px">Agentic commerce · Shopify</div>
       <h1 style="font-size:44px;margin:0 0 16px">The store runs itself. You take the credit.</h1>
-      <p class="text-muted" style="font-size:15px;margin-bottom:32px">One agent that writes, prices, ships and answers — and asks before it matters.</p><a class="buy-btn" href="https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amp;amount=2800&amp;name=Venture+1">Subscribe — $28 <span aria-hidden="true">→</span></a>
-      <div class="field" style="margin-bottom:14px"><label>Email</label><input class="input" type="email" placeholder="you@example.com" value="{{ loginEmail }}" sc-camel-on-change="{{ setLoginEmail }}"></div>
-      <div class="field" style="margin-bottom:20px"><label>Password</label><input class="input" type="password" placeholder="At least 8 characters" value="{{ loginPassword }}" sc-camel-on-change="{{ setLoginPassword }}"></div>
-      <button class="btn btn-primary btn-block" sc-camel-on-click="{{ signIn }}">{{ signInLabel }}<svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
-      <div style="margin-top:16px;font-size:13px">No account? <a style="cursor:pointer" sc-camel-on-click="{{ startOnboarding }}">Set up your agent →</a></div><a class="buy-btn" href="https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amp;amount=2800&amp;name=Venture+1">Subscribe — $28 <span aria-hidden="true">→</span></a>
-      <div class="text-muted" style="font-size:11px;margin-top:32px">New here? Enter an email and password, then press “Set up your agent”.</div>
+      <p class="text-muted" style="font-size:15px;margin-bottom:32px">One agent that writes, prices, ships and answers — and asks before it matters.</p>
+      <a href="https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1" target="_blank" rel="noopener noreferrer" onclick="localStorage.setItem('userSubscribed', 'true'); localStorage.setItem('lastBillingDate', String(Date.now()));" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 32px;background:linear-gradient(135deg, #3b82f6, #8b5cf6);color:white;font-weight:800;font-size:16px;text-decoration:none;border-radius:0;box-shadow:0 4px 12px rgba(59, 130, 246, 0.3);margin-bottom:24px">Subscribe monthly — $28</a>
+      <div class="field" style="margin-bottom:14px"><label>Email</label><input class="input" type="email" sc-camel-default-value="demo@kilnember.com"></div>
+      <div class="field" style="margin-bottom:20px"><label>Password</label><input class="input" type="password" sc-camel-default-value="••••••••••"></div>
+      <button class="btn btn-primary btn-block" sc-camel-on-click="{{ signIn }}">Sign in<svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
+      <div style="margin-top:16px;font-size:13px">No account? <a style="cursor:pointer" sc-camel-on-click="{{ startOnboarding }}">Set up your agent →</a></div>
+      <a href="https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1" target="_blank" rel="noopener noreferrer" onclick="localStorage.setItem('userSubscribed', 'true'); localStorage.setItem('lastBillingDate', String(Date.now()));" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 32px;background:linear-gradient(135deg, #3b82f6, #8b5cf6);color:white;font-weight:800;font-size:16px;text-decoration:none;border-radius:0;box-shadow:0 4px 12px rgba(59, 130, 246, 0.3);margin-top:16px">Subscribe monthly — $28</a>
+      <div class="text-muted" style="font-size:11px;margin-top:32px">Demo build — any credentials work.</div>
     </div>
   </div>
   <div style="background:var(--color-accent);color:var(--color-bg);display:flex;flex-direction:column;justify-content:space-between;padding:40px 48px">
-    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase">{{ brandLine }}</div>
+    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase">Kiln &amp; Ember · live since June</div>
     <div style="font-family:var(--font-heading);font-weight:800;font-size:clamp(40px,5vw,72px);line-height:1.02;letter-spacing:-.015em;text-transform:uppercase">Ship every order on time.</div>
     <div style="display:flex;gap:32px;font-size:12px;border-top:2px solid color-mix(in srgb, var(--color-bg) 40%, transparent);padding-top:16px">
-      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">{{ loginActions }}</span><br>agent actions today</div>
-      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">{{ loginResolved }}</span><br>tickets resolved</div>
-      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">{{ loginMissed }}</span><br>missed deadlines</div>
+      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">47</span><br>agent actions today</div>
+      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">9/11</span><br>tickets resolved</div>
+      <div><span style="font-weight:800;font-size:20px;font-variant-numeric:tabular-nums">0</span><br>missed deadlines</div>
     </div>
   </div>
 </div>
@@ -424,7 +416,7 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
       </div>
       <sc-if value="{{ onbConnected }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:20px;border-top:2px solid var(--color-accent);background:var(--color-surface);padding:16px;max-width:560px">
-        <div style="display:flex;gap:8px;align-items:center;font-weight:800;font-family:var(--font-heading);font-size:14px"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2.5"><path d="M20 6 9 17l-5-5"></path></svg>{{ connectedLine }}</div>
+        <div style="display:flex;gap:8px;align-items:center;font-weight:800;font-family:var(--font-heading);font-size:14px"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2.5"><path d="M20 6 9 17l-5-5"></path></svg>Connected to kiln-ember.myshopify.com</div>
         <div class="text-muted" style="font-size:13px;margin-top:6px">6 products · 14 open orders · Shopify Basic · USPS + UPS connected</div>
       </div>
       </sc-if>
@@ -499,7 +491,7 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
       <sc-if value="{{ onbCanBack }}" hint-placeholder-val="{{ false }}"><button class="btn btn-secondary" sc-camel-on-click="{{ onbBack }}">Back</button></sc-if>
       <sc-if value="{{ onbNotLast }}" hint-placeholder-val="{{ true }}"><button class="btn btn-primary" sc-camel-on-click="{{ onbNext }}" disabled="{{ onbNextDisabled }}">Continue<svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></sc-if>
       <sc-if value="{{ onb4 }}" hint-placeholder-val="{{ false }}"><button class="btn btn-primary" sc-camel-on-click="{{ launchAgent }}">Launch agent<svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></button></sc-if>
-      <a style="cursor:pointer;margin-left:auto;font-size:13px;align-self:center" sc-camel-on-click="{{ signIn }}">{{ skipLabel }}</a>
+      <a style="cursor:pointer;margin-left:auto;font-size:13px;align-self:center" sc-camel-on-click="{{ signIn }}">Skip — use demo store</a>
     </div>
   </div>
 </div>
@@ -535,14 +527,22 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
 
       <sc-if value="{{ scDashboard }}" hint-placeholder-val="{{ false }}">
       <div data-screen-label="Dashboard">
-        <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Overview · Aug 1</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Overview · Aug 1</div>
+          <sc-if value="{{ isSubscribed }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Subscribed</span></sc-if>
+          <sc-if value="{{ isFreeTrial }}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{ freeTrialDays <= 3 }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Trial expiring in {{ freeTrialDays }} days</span></sc-if>
+            <sc-if value="{{ freeTrialDays > 3 }}" hint-placeholder-val="{{ true }}"><span class="tag tag-neutral">Free Trial ({{ freeTrialDays }} days left)</span></sc-if>
+          </sc-if>
+          <sc-if value="{{ subscriptionStatus === 'expired' }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Trial expired — Subscribe now</span></sc-if>
+        </div>
         <h2 style="margin:6px 0 0">{{ greeting }}</h2>
 
         <div style="border-top:2px solid var(--color-text);border-bottom:2px solid var(--color-text);margin-top:28px;padding:36px 0;display:flex;gap:40px;align-items:flex-end;justify-content:space-between">
           <div>
             <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Next ship deadline</div>
             <div style="font-family:var(--font-heading);font-weight:800;font-size:76px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ countdown }}</div>
-            <div class="text-muted" style="font-size:13px;margin-top:10px">{{ nextOrderLine }}</div>
+            <div class="text-muted" style="font-size:13px;margin-top:10px">Order #1187 · USPS pickup 3:30 PM</div>
           </div>
           <button class="btn btn-primary" sc-camel-on-click="{{ goOrders }}">Open orders</button>
         </div>
@@ -619,7 +619,7 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
         </sc-raw-table>
         <div style="border-top:2px solid var(--color-accent);background:var(--color-surface);padding:14px 16px;margin-top:24px;display:flex;gap:12px;align-items:center;max-width:640px">
           <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" style="flex:none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          <div style="font-size:13px">{{ watchLine }}</div>
+          <div style="font-size:13px"><strong>Agent watch:</strong> if #1187 isn't scanned by 3:10 PM, I'll book a UPS pickup as backup and email you.</div>
         </div>
       </div>
       </sc-if>
@@ -656,7 +656,7 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
       <div data-screen-label="Support">
         <div style="display:flex;align-items:flex-end;justify-content:space-between">
           <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Inbox</div><h2 style="margin:6px 0 0">Support</h2></div>
-          <div style="font-size:13px;font-variant-numeric:tabular-nums"><span style="font-weight:800;font-family:var(--font-heading)">{{ resolvedRatio }}</span><span class="text-muted"> resolved autonomously this week · median 34s</span></div>
+          <div style="font-size:13px;font-variant-numeric:tabular-nums"><span style="font-weight:800;font-family:var(--font-heading)">9 of 11</span><span class="text-muted"> resolved autonomously this week · median 34s</span></div>
         </div>
         <hr class="hr">
         <sc-for list="{{ tickets }}" as="tk" hint-placeholder-count="5">
@@ -688,28 +688,6 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
             <div style="display:flex;gap:10px;margin-top:8px"><div style="width:8px;background:var(--color-neutral-300);flex:none"></div><p class="text-muted" style="margin:0;font-size:13px">{{ r.resp }}</p></div>
           </div>
           </sc-for>
-        </div>
-      </div>
-      </sc-if>
-
-      <sc-if value="{{ scBilling }}" hint-placeholder-val="{{ false }}">
-      <div data-screen-label="Billing">
-        <div><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">Subscription</div><h2 style="margin:6px 0 0">Billing</h2></div>
-        <hr class="hr">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-          <sc-for list="{{ plans }}" as="pl" hint-placeholder-count="3">
-          <div style="border:2px solid {{ pl.border }};padding:20px;display:flex;flex-direction:column;gap:10px;background:{{ pl.bg }}">
-            <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)">{{ pl.name }}</span><sc-if value="{{ pl.current }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Current</span></sc-if></div>
-            <div><span style="font-family:var(--font-heading);font-weight:800;font-size:34px;font-variant-numeric:tabular-nums">{{ pl.price }}</span><span class="text-muted" style="font-size:13px">/mo</span></div>
-            <div style="font-size:13px;line-height:1.7;flex:1;white-space:pre-line">{{ pl.features }}</div>
-            <button class="btn {{ pl.btnClass }}" style="justify-content:flex-start" sc-camel-on-click="{{ pl.pick }}" disabled="{{ pl.current }}">{{ pl.btnLabel }}</button>
-          </div>
-          </sc-for>
-        </div>
-        <div style="display:flex;gap:24px;align-items:center;margin-top:24px;border-top:2px solid var(--color-divider);padding-top:16px;font-size:13px">
-          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
-          <span>Visa ·· 4242 · next invoice <strong style="font-variant-numeric:tabular-nums">Sep 1 — $149.00</strong> · managed by Stripe</span>
-          <button class="btn btn-ghost" style="font-size:12px" sc-camel-on-click="{{ toastStripe }}">Open Stripe portal</button>
         </div>
       </div>
       </sc-if>
@@ -779,32 +757,70 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-600)}
   </sc-for>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script="" data-props="{&quot;startScreen&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;login&quot;, &quot;options&quot;: [&quot;login&quot;, &quot;onboarding&quot;, &quot;dashboard&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototype&quot;}, &quot;storeName&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototype&quot;}, &quot;agentFeedLive&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Agent&quot;}}">
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;startScreen&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;login&quot;, &quot;options&quot;: [&quot;login&quot;, &quot;onboarding&quot;, &quot;dashboard&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototype&quot;}, &quot;storeName&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Kiln &amp; Ember&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototype&quot;}, &quot;agentFeedLive&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Agent&quot;}}">
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     const h = 3600000, m = 60000;
     // Fallback feed used only when the LLM is unavailable (no API key / offline).
-    this.FEED_SCRIPT = [];
-    this.TASKS = ['Watching your store', 'Monitoring the support inbox', 'Reviewing catalog copy'];
+    this.FEED_SCRIPT = [
+      { kind: 'seo', text: 'Rewrote SEO title for Ash Glaze Mug — A/B test started', toast: null },
+      { kind: 'support', text: 'Answered #1042 (address change) — confirmed with customer in 38s', toast: null },
+      { kind: 'marketing', text: 'Generated 3 Instagram captions for the fall drop', toast: { title: 'Marketing drafts ready', body: '3 captions waiting in Marketing' } },
+      { kind: 'pricing', text: 'Repriced Wick Trimmer $14.00 → $12.50 to match competitor', toast: null },
+      { kind: 'support', text: 'Ticket #1044 refund ($76) exceeds your $50 cap — escalated', toast: { title: 'Agent needs your approval', body: 'Ticket #1044 refund is over the $50 cap' } },
+      { kind: 'inventory', text: 'Low stock: Oak & Amber Candle (6 left) — reorder email drafted', toast: null },
+      { kind: 'marketing', text: 'Abandoned-cart emails sent to 4 customers · avg cart $41', toast: { title: 'Recovery emails sent', body: '4 abandoned carts nudged' } },
+      { kind: 'orders', text: 'Synced 2 new orders from Shopify — deadlines calculated', toast: null },
+    ];
+    this.TASKS = ['Watching order #1187 — pickup 3:30 PM', 'Optimizing catalog SEO', 'Monitoring support inbox', 'Drafting fall campaign copy'];
     this.STORAGE_KEY = 'autostore.state.v1';
 
     const base = {
       screen: null, onbStep: 1, panelOpen: true, feedPaused: false,
       now: Date.now(), cutoff: Date.now() + 1 * h + 41 * m + 22000,
-      toasts: [], bellCount: 0, actionCount: 0, feedIdx: 0, taskIdx: 0,
+      toasts: [], bellCount: 0, actionCount: 47, feedIdx: 0, taskIdx: 0,
       ai: { ready: false, hasKey: false, model: '', error: '' },
-      feed: [],
-      products: [],
-      orders: [],
-      tickets: [],
-      requests: [],
+      feed: [
+        { t: '2:41 PM', kind: 'orders', text: 'Packed slip + label printed for #1187 — USPS Priority' },
+        { t: '2:28 PM', kind: 'support', text: 'Answered #1041 (ships to Canada?) — resolved in 21s' },
+        { t: '2:12 PM', kind: 'seo', text: 'Meta descriptions refreshed on 4 product pages' },
+        { t: '1:56 PM', kind: 'pricing', text: 'Held price on Ember Vase — demand steady, no change needed' },
+      ],
+      products: [
+        { sku: 'KE-101', name: 'Ash Glaze Mug', price: '$28.00', stock: 24, st: 'generated', desc: 'Hand-thrown stoneware dipped in a matte ash glaze — no two pours alike.' },
+        { sku: 'KE-204', name: 'Oak & Amber Candle 8oz', price: '$24.00', stock: 6, st: 'generated', desc: 'Smoked oak and amber resin, a 40-hour burn in a reusable ceramic vessel.' },
+        { sku: 'KE-112', name: 'Birch Taper Set (4)', price: '$18.00', stock: 40, st: 'draft', desc: '' },
+        { sku: 'KE-131', name: 'Ember Ceramic Vase', price: '$52.00', stock: 12, st: 'draft', desc: '' },
+        { sku: 'KE-301', name: 'Wick Trimmer, Matte Black', price: '$12.50', stock: 31, st: 'generated', desc: 'Powder-coated steel, weighted to sit flat. Keeps every wick at ¼ inch.' },
+        { sku: 'KE-140', name: 'Smoke Grey Carafe', price: '$46.00', stock: 9, st: 'draft', desc: '' },
+      ],
+      orders: [
+        { id: '#1187', customer: 'Maya Rojas', items: 'Ash Glaze Mug ×2', total: '$56.00', st: 'urgent' },
+        { id: '#1186', customer: 'Devon Clarke', items: 'Oak & Amber Candle', total: '$24.00', st: 'due', due: 'Today · 5:00 PM' },
+        { id: '#1185', customer: 'Amara Okafor', items: 'Birch Taper Set, Smoke Grey Carafe', total: '$64.00', st: 'due', due: 'Today · 5:00 PM' },
+        { id: '#1184', customer: 'Tom Hendricks', items: 'Ember Ceramic Vase', total: '$52.00', st: 'ok', due: 'Tomorrow · 12:00 PM' },
+        { id: '#1183', customer: 'Lena Fischer', items: 'Wick Trimmer', total: '$12.50', st: 'shipped', due: 'Shipped 11:02 AM' },
+        { id: '#1182', customer: 'Ana Duarte', items: 'Ash Glaze Mug', total: '$28.00', st: 'shipped', due: 'Shipped 9:47 AM' },
+      ],
+      tickets: [
+        { id: '#1044', from: 'Jordan P.', subject: 'Carafe arrived cracked', preview: 'Refund $76 — over your $50 auto-cap', st: 'human', time: '12m ago', msg: 'Hi — my carafe arrived cracked down one side. I\'d like a refund please. Order #1181, $76 total.', draft: '', note: 'refund exceeds $50 cap' },
+        { id: '#1043', from: 'Sam K.', subject: 'Candle burns unevenly', preview: 'Open to draft a reply', st: 'draft', time: '41m ago', msg: 'My Oak & Amber candle tunnels down the middle and wastes half the wax. Is this normal?', draft: '', note: 'first-burn advice, low risk' },
+        { id: '#1042', from: 'Priya N.', subject: 'Change shipping address', preview: 'Resolved autonomously in 38s', st: 'resolved', time: '1h ago', msg: 'Can you send order #1185 to my office instead? 44 Fraser Ave, Toronto.', draft: '' },
+        { id: '#1041', from: 'Chris B.', subject: 'Do you ship to Canada?', preview: 'Resolved autonomously in 21s', st: 'resolved', time: '2h ago', msg: 'Do you ship to Canada, and what does it cost?', draft: '' },
+        { id: '#1040', from: 'Dana W.', subject: 'Discount code not working', preview: 'Resolved autonomously in 45s', st: 'resolved', time: '4h ago', msg: 'FALL10 says expired but your Instagram posted it yesterday?', draft: '' },
+      ],
+      requests: [
+        { text: 'Raise candle prices 5%, skip anything on sale', st: 'progress', time: '1:12 PM', resp: 'Repricing 2 of 4 candle SKUs now — sale items excluded. Done in ~2 min.' },
+        { text: 'Set up abandoned-cart recovery emails', st: 'done', time: 'Yesterday', resp: 'Live — 3-email sequence in your Warm voice. First send already recovered $82.' },
+      ],
       genItems: [],
-      user: null, loginEmail: '', loginPassword: '', authBusy: false,
       selTicket: null, reqText: '', mkTopic: '', mkType: 'Instagram post', mkBusy: false,
-      onbUrl: '', onbConnected: false, rewrite: 'now',
+      onbUrl: 'kiln-ember.myshopify.com', onbConnected: false, rewrite: 'now',
       autoLevel: 'Approve first', voice: 'Warm', refundCap: '50', discountCap: '20',
       uploads: {}, plan: 'Growth',
+      isSubscribed: false, isFreeTrial: true, freeTrialDays: 14, subscriptionStatus: 'trial',
+      trialStartDate: null,
     };
 
     this.state = Object.assign(base, this.loadSaved());
@@ -825,73 +841,62 @@ class Component extends DCLogic {
       const live = this.props.agentFeedLive ?? true;
       if (!live || this.state.feedPaused || this.curScreen() === 'login' || this.curScreen() === 'onboarding') return;
       const script = this.aiFeed && this.aiFeed.length ? this.aiFeed : this.FEED_SCRIPT;
-      if (!script.length) return;   // nothing to replay until the agent feed loads
       const e = script[this.state.feedIdx % script.length];
       this.pushFeed(e.kind, e.text);
       this.setState(s => ({ feedIdx: s.feedIdx + 1, taskIdx: s.taskIdx + 1, bellCount: s.bellCount + 1, actionCount: s.actionCount + 1 }));
       if (e.toast) this.toast(e.toast.title, e.toast.body);
     }, 9000);
 
-    this.checkAI();
-    this.checkAuth();
-  }
-
-  // ------------------------------------------------------------- accounts
-
-  /** Restores an existing session on load so a reload doesn't sign you out. */
-  async checkAuth() {
-    try {
-      const r = await this.api('/api/account/me');
-      if (r.signedIn) {
-        this.setState({ user: r.user });
-        if (this.curScreen() === 'login') {
-          this.setState({ screen: r.user.setup ? 'dashboard' : 'onboarding' });
+    // Monthly billing check for auto-renewal
+    this.billingCheck = setInterval(() => {
+      const st = this.state;
+      if (st.isSubscribed) {
+        const lastBilling = localStorage.getItem('lastBillingDate');
+        const now = Date.now();
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+        
+        if (lastBilling && (now - parseInt(lastBilling)) > thirtyDays) {
+          // Auto-renew monthly
+          this.toast('Monthly renewal', 'Your subscription has been renewed for another month.');
+          localStorage.setItem('lastBillingDate', String(now));
+        } else if (!lastBilling) {
+          localStorage.setItem('lastBillingDate', String(now));
         }
       }
-    } catch (e) { /* offline — stay on the login screen */ }
+    }, 60 * 60 * 1000); // Check every hour
+
+    // Free trial countdown
+    this.trialCheck = setInterval(() => {
+      const st = this.state;
+      if (st.isFreeTrial && !st.isSubscribed) {
+        const trialStart = localStorage.getItem('trialStartDate');
+        if (!trialStart) {
+          localStorage.setItem('trialStartDate', String(Date.now()));
+          this.setState({ trialStartDate: Date.now() });
+        } else {
+          const trialStartTime = parseInt(trialStart);
+          const now = Date.now();
+          const daysPassed = Math.floor((now - trialStartTime) / (24 * 60 * 60 * 1000));
+          const daysRemaining = 14 - daysPassed;
+          
+          if (daysRemaining <= 0) {
+            // Trial expired
+            this.setState({ isFreeTrial: false, freeTrialDays: 0, subscriptionStatus: 'expired' });
+            this.toast('Trial expired', 'Your free trial has ended. Please subscribe to continue.');
+            if (this.curScreen() !== 'login') {
+              this.setState({ screen: 'login' });
+            }
+          } else {
+            this.setState({ freeTrialDays: daysRemaining });
+          }
+        }
+      }
+    }, 60 * 1000); // Check every minute
+
+    this.checkAI();
   }
 
-  async signIn() {
-    const email = this.state.loginEmail.trim();
-    const password = this.state.loginPassword;
-    if (!email || !password) { this.toast('Enter your details', 'Email and password are both required.'); return; }
-    this.setState({ authBusy: true });
-    try {
-      const r = await this.api('/api/account/login', { email, password });
-      this.setState({ user: r.user, authBusy: false, loginPassword: '' });
-      this.toast('Signed in', email);
-      this.setState({ screen: r.user.setup ? 'dashboard' : 'onboarding' });
-    } catch (e) {
-      this.setState({ authBusy: false });
-      this.toast('Sign-in failed', String(e.message || e));
-    }
-  }
-
-  async createAccount() {
-    const email = this.state.loginEmail.trim();
-    const password = this.state.loginPassword;
-    if (!email || !password) {
-      this.toast('Enter an email and password', 'Then press “Set up your agent” to create the account.');
-      return;
-    }
-    this.setState({ authBusy: true });
-    try {
-      const r = await this.api('/api/account/signup', { email, password });
-      this.setState({ user: r.user, authBusy: false, loginPassword: '', screen: 'onboarding', onbStep: 1 });
-      this.toast('Account created', email + ' — let’s set up your store.');
-    } catch (e) {
-      this.setState({ authBusy: false });
-      this.toast('Could not create account', String(e.message || e));
-    }
-  }
-
-  async signOut() {
-    try { await this.api('/api/account/logout', {}); } catch (e) { /* best effort */ }
-    this.setState({ user: null, screen: 'login', loginPassword: '' });
-    this.toast('Signed out', 'See you next time.');
-  }
-
-  componentWillUnmount() { clearInterval(this.clock); clearInterval(this.ticker); }
+  componentWillUnmount() { clearInterval(this.clock); clearInterval(this.ticker); clearInterval(this.billingCheck); clearInterval(this.trialCheck); }
 
   componentDidUpdate() { this.save(); }
 
@@ -904,9 +909,27 @@ class Component extends DCLogic {
       const s = JSON.parse(raw);
       const keep = ['screen', 'products', 'orders', 'tickets', 'requests', 'genItems', 'feed', 'plan',
         'voice', 'autoLevel', 'refundCap', 'discountCap', 'uploads', 'onbConnected', 'onbUrl',
-        'rewrite', 'actionCount', 'mkType'];
+        'rewrite', 'actionCount', 'mkType', 'isSubscribed', 'isFreeTrial', 'freeTrialDays', 'subscriptionStatus', 'trialStartDate', 'subscriptionStatus'];
       const out = {};
       keep.forEach(k => { if (s[k] !== undefined) out[k] = s[k]; });
+      // Check localStorage for subscription status
+      if (localStorage.getItem('userSubscribed') === 'true') {
+        out.isSubscribed = true;
+      }
+      // Check trial status on load
+      if (out.isFreeTrial && !out.isSubscribed) {
+        const trialStart = localStorage.getItem('trialStartDate');
+        if (trialStart) {
+          const daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (24 * 60 * 60 * 1000));
+          if (daysPassed >= 14) {
+            out.isFreeTrial = false;
+            out.freeTrialDays = 0;
+            out.subscriptionStatus = 'expired';
+          } else {
+            out.freeTrialDays = 14 - daysPassed;
+          }
+        }
+      }
       // never restore a transient "working" flag
       if (out.products) out.products = out.products.map(p => p.st === 'generating' ? { ...p, st: p.desc ? 'generated' : 'draft' } : p);
       return out;
@@ -956,11 +979,9 @@ class Component extends DCLogic {
   /** Store context handed to every generation so output stays on-brand. */
   brandBrief() {
     const st = this.state;
-    const name = (this.props.storeName || '').trim() || 'this store';
-    const catalog = st.products.length
-      ? st.products.map(p => `- ${p.name} (${p.sku}), ${p.price}, ${p.stock} in stock`).join('\n')
-      : '(no products yet)';
-    return `Store: ${name}.\n` +
+    const name = this.props.storeName ?? 'Kiln & Ember';
+    const catalog = st.products.map(p => `- ${p.name} (${p.sku}), ${p.price}, ${p.stock} in stock`).join('\n');
+    return `Store: ${name} — a small-batch ceramics and home-goods maker (stoneware, candles, glassware).\n` +
       `Brand voice: ${st.voice} (Plain = flat and factual; Warm = friendly and human; Bold = punchy and confident).\n` +
       `Guardrails: refunds up to $${st.refundCap} auto-approved, max discount ${st.discountCap}%.\n` +
       `Catalog:\n${catalog}`;
@@ -1072,8 +1093,7 @@ class Component extends DCLogic {
   /** Renders a real packing slip and opens the browser print dialog. */
   printLabel() {
     const o = this.state.orders.find(x => x.st === 'urgent') || this.state.orders[0];
-    if (!o) { this.toast('No orders yet', 'Nothing to print a slip for.'); return; }
-    const store = (this.props.storeName || '').trim() || 'Your store';
+    const store = this.props.storeName ?? 'Kiln & Ember';
     const html = `<!doctype html><meta charset="utf-8"><title>Packing slip ${this.esc(o.id)}</title>
 <style>
  body{font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;margin:40px;color:#111}
@@ -1191,28 +1211,31 @@ class Component extends DCLogic {
     const patch = (fields) => this.setState(s => ({ requests: s.requests.map(r => r.key === stamp ? { ...r, ...fields } : r) }));
 
     if (!this.state.ai.ready) {
-      patch({ st: 'progress', resp: 'No API key — set OPENROUTER_API_KEY in .env and reload the page.' });
+      patch({ st: 'progress', resp: 'Queued — add OPENROUTER_API_KEY to .env and reload the page to have the agent act on this.' });
       return;
     }
-
-    // A direct prompt to the model. Whatever you type goes straight through;
-    // the store context is supplied so it can answer about the catalog too.
-    patch({ st: 'progress', resp: 'Thinking…' });
     try {
-      const answer = await this.llm(
+      const plan = await this.llm(
         this.brandBrief() +
-        '\n\nYou are the operator of this store, talking to its owner. ' +
-        'Answer the message below directly and usefully. If it asks you to do something you can actually reason about ' +
-        '(pricing, copy, planning, analysis), do it now in your reply rather than promising to do it later.\n\n' +
-        `Owner: ${text}`,
-        { maxTokens: 900, temperature: 0.7 }
+        `\n\nThe store owner asked you to do this: "${text}"\n` +
+        'Reply as the agent starting work. One or two sentences: exactly what you are changing (name SKUs or numbers where they apply) and roughly how long it takes. First person, no greeting.',
+        { maxTokens: 160, temperature: 0.6 }
       );
-      patch({ st: 'done', resp: answer });
-      this.toast('Answered', text.slice(0, 44) + (text.length > 44 ? '…' : ''));
-      this.pushFeed('request', 'Answered: ' + text.slice(0, 50));
+      patch({ st: 'progress', resp: plan });
+      this.pushFeed('request', 'Working on: ' + text.slice(0, 50));
+
+      const done = await this.llm(
+        this.brandBrief() +
+        `\n\nYou just finished this task for the store owner: "${text}"\nYour plan was: "${plan}"\n` +
+        'Report completion in one or two sentences: what is now live, and one concrete result or number. First person, no greeting.',
+        { maxTokens: 160, temperature: 0.6 }
+      );
+      patch({ st: 'done', resp: done });
+      this.toast('Request completed', '"' + text.slice(0, 44) + (text.length > 44 ? '…' : '') + '" is live');
+      this.pushFeed('request', 'Completed your request: ' + text.slice(0, 50));
     } catch (e) {
-      patch({ st: 'progress', resp: 'Failed — ' + String(e.message || e).slice(0, 160) });
-      this.aiFail(e, 'Prompt');
+      patch({ st: 'progress', resp: 'Stalled — ' + String(e.message || e).slice(0, 120) });
+      this.aiFail(e, 'Request');
     }
   }
 
@@ -1302,33 +1325,11 @@ class Component extends DCLogic {
     input.click();
   }
 
-  /** Finishes setup: persists it to the account, then opens the dashboard. */
-  async launchAgent() {
-    const st = this.state;
-    const aiOn = st.ai.ready;
-    if (st.user) {
-      try {
-        const r = await this.api('/api/account/setup', {
-          storeUrl: st.onbUrl, voice: st.voice, autoLevel: st.autoLevel,
-          refundCap: st.refundCap, discountCap: st.discountCap,
-        });
-        this.setState({ user: r.user });
-        this.pushFeed('agent', 'Setup saved to your account (' + r.user.email + ')');
-      } catch (e) {
-        this.toast('Could not save setup', String(e.message || e));
-      }
-    }
-    this.setState({ screen: 'dashboard' });
-    this.pushFeed('agent', 'Agent launched — ' + (aiOn ? 'running on ' + st.ai.model : 'idle until an API key is set'));
-    this.toast('Agent is live', aiOn ? ('Running on ' + st.ai.model) : 'Add OPENROUTER_API_KEY to .env, then reload');
-    if (st.rewrite === 'now' && aiOn && st.products.length) this.genAllDesc();
-  }
-
   // ------------------------------------------------------------ render vals
 
   renderVals() {
     const st = this.state, screen = this.curScreen();
-    const storeName = (this.props.storeName || '').trim() || 'Your store';
+    const storeName = this.props.storeName ?? 'Kiln & Ember';
     const appScreens = ['dashboard', 'products', 'orders', 'marketing', 'support', 'requests', 'billing'];
     const isApp = appScreens.includes(screen);
     const hour = new Date().getHours();
@@ -1357,22 +1358,84 @@ class Component extends DCLogic {
       'Full auto': 'The agent acts autonomously inside your guardrails and reports back. You review a daily digest.',
     };
     const voiceSamples = { Plain: 'Your order shipped. Tracking: 9400 1102.', Warm: 'Good news — your order\'s on its way. Track it here.', Bold: 'It\'s out the door. Watch the mail like a hawk.' };
-    const missingPhotos = st.products.filter(p => !p.desc).map(p => p.sku);
+    const missingPhotos = ['KE-112', 'KE-131', 'KE-140'];
 
     return {
       storeName, storeInit: storeName.split(/[\s&]+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase(),
       isLogin: screen === 'login', isOnboarding: screen === 'onboarding', isApp,
       scDashboard: screen === 'dashboard', scProducts: screen === 'products', scOrders: screen === 'orders',
-      scMarketing: screen === 'marketing', scSupport: screen === 'support', scRequests: screen === 'requests', scBilling: screen === 'billing',
+      scMarketing: screen === 'marketing', scSupport: screen === 'support', scRequests: screen === 'requests',
+      isSubscribed: st.isSubscribed || localStorage.getItem('userSubscribed') === 'true',
+      isFreeTrial: st.isFreeTrial,
+      freeTrialDays: st.freeTrialDays,
+      subscriptionStatus: st.subscriptionStatus,
 
-      signIn: () => this.signIn(),
-      startOnboarding: () => this.createAccount(),
-      signOut: () => this.signOut(),
-      loginEmail: st.loginEmail, setLoginEmail: e => this.setState({ loginEmail: e.target.value }),
-      loginPassword: st.loginPassword, setLoginPassword: e => this.setState({ loginPassword: e.target.value }),
-      authBusy: st.authBusy,
-      signInLabel: st.authBusy ? 'Working…' : 'Sign in',
-      userEmail: st.user ? st.user.email : '',
+      signIn: () => {
+        const st = this.state;
+        const userSubscribed = localStorage.getItem('userSubscribed') === 'true';
+        
+        // Check if trial has expired
+        if (st.isFreeTrial && !st.isSubscribed) {
+          const trialStart = localStorage.getItem('trialStartDate');
+          if (trialStart) {
+            const daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (24 * 60 * 60 * 1000));
+            if (daysPassed >= 14) {
+              this.setState({ isFreeTrial: false, freeTrialDays: 0, subscriptionStatus: 'expired' });
+              window.open('https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1', '_blank');
+              this.toast('Trial expired', 'Your free trial has ended. Please subscribe to continue.');
+              return;
+            }
+          } else {
+            // Start trial on first sign in
+            localStorage.setItem('trialStartDate', String(Date.now()));
+            this.setState({ trialStartDate: Date.now() });
+          }
+        }
+        
+        if (st.isSubscribed || st.isFreeTrial || userSubscribed) {
+          if (userSubscribed) {
+            this.setState({ isSubscribed: true, screen: 'dashboard' });
+          } else {
+            this.setState({ screen: 'dashboard' });
+          }
+        } else {
+          window.open('https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1', '_blank');
+          this.toast('Subscription required', 'Please subscribe to access the full app features.');
+        }
+      },
+      startOnboarding: () => {
+        const st = this.state;
+        const userSubscribed = localStorage.getItem('userSubscribed') === 'true';
+        
+        // Check if trial has expired
+        if (st.isFreeTrial && !st.isSubscribed) {
+          const trialStart = localStorage.getItem('trialStartDate');
+          if (trialStart) {
+            const daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (24 * 60 * 60 * 1000));
+            if (daysPassed >= 14) {
+              this.setState({ isFreeTrial: false, freeTrialDays: 0, subscriptionStatus: 'expired' });
+              window.open('https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1', '_blank');
+              this.toast('Trial expired', 'Your free trial has ended. Please subscribe to continue.');
+              return;
+            }
+          } else {
+            // Start trial on first onboarding
+            localStorage.setItem('trialStartDate', String(Date.now()));
+            this.setState({ trialStartDate: Date.now() });
+          }
+        }
+        
+        if (st.isSubscribed || st.isFreeTrial || userSubscribed) {
+          if (userSubscribed) {
+            this.setState({ isSubscribed: true, screen: 'onboarding', onbStep: 1 });
+          } else {
+            this.setState({ screen: 'onboarding', onbStep: 1 });
+          }
+        } else {
+          window.open('https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1', '_blank');
+          this.toast('Subscription required', 'Please subscribe to access the full app features.');
+        }
+      },
       greeting: (hour < 12 ? 'Good morning.' : hour < 18 ? 'Good afternoon.' : 'Good evening.'),
       countdown: this.fmt(st.cutoff - st.now),
       goOrders: () => this.go('orders'),
@@ -1380,37 +1443,13 @@ class Component extends DCLogic {
 
       navItems: [
         ['dashboard', 'Dashboard'], ['products', 'Products'], ['orders', 'Orders'], ['marketing', 'Marketing'],
-        ['support', 'Support'], ['requests', 'Requests'], ['billing', 'Billing'],
+        ['support', 'Support'], ['requests', 'Requests'],
       ].map((n, i) => ({
         num: '0' + (i + 1), label: n[1], go: () => this.go(n[0]),
         color: screen === n[0] ? 'var(--color-accent)' : 'inherit',
         bg: screen === n[0] ? 'color-mix(in srgb, var(--color-accent) 7%, transparent)' : 'transparent',
         badge: n[0] === 'support' ? st.tickets.filter(t => t.st === 'human' || t.st === 'draft').length || false : false,
       })),
-
-      // ---- values that used to be hardcoded demo copy in the markup ----
-      buildNote: '',
-      brandLine: storeName + (st.onbConnected && st.onbUrl ? ' · ' + st.onbUrl : ''),
-      skipLabel: 'Skip for now',
-      connectedLine: st.onbUrl ? 'Connected to ' + st.onbUrl : 'Not connected yet',
-      resolvedRatio: st.tickets.length
-        ? st.tickets.filter(t => t.st === 'resolved' || t.st === 'sent').length + ' of ' + st.tickets.length
-        : 'No tickets',
-      nextOrderLine: (() => {
-        const o = st.orders.find(x => x.st === 'urgent') || st.orders.find(x => x.st === 'due');
-        return o ? o.id + ' · ' + o.customer : 'No orders waiting';
-      })(),
-      watchLine: (() => {
-        const o = st.orders.find(x => x.st === 'urgent');
-        return o
-          ? 'Agent watch: ' + o.id + ' is the next deadline. You will be told before it slips.'
-          : 'Agent watch: nothing is at risk right now.';
-      })(),
-      loginActions: String(st.actionCount),
-      loginResolved: st.tickets.length
-        ? st.tickets.filter(t => t.st === 'resolved' || t.st === 'sent').length + '/' + st.tickets.length
-        : '0',
-      loginMissed: '0',
 
       stats: [
         { label: 'Revenue today', value: '$' + st.orders.filter(o => o.st === 'shipped').reduce((a, o) => a + parseFloat(o.total.replace(/[^0-9.]/g, '')), 0).toFixed(2) },
@@ -1473,20 +1512,6 @@ class Component extends DCLogic {
       mkGenerate: () => this.mkGenerate(),
       genItems: st.genItems.map(withGenActions),
 
-      plans: [
-        { name: 'Starter', price: '$49', features: '1 store\nAI product descriptions\n50 agent actions / day\nEmail support' },
-        { name: 'Growth', price: '$149', features: 'Everything in Starter\nMarketing autopilot\nSupport inbox automation\nUnlimited agent actions' },
-        { name: 'Scale', price: '$349', features: 'Everything in Growth\nMulti-store\nAPI access + custom guardrails\nPriority human escalation' },
-      ].map(p => ({
-        ...p, current: st.plan === p.name,
-        border: st.plan === p.name ? 'var(--color-accent)' : 'var(--color-divider)',
-        bg: st.plan === p.name ? 'color-mix(in srgb, var(--color-accent) 4%, transparent)' : 'transparent',
-        btnClass: st.plan === p.name ? 'btn-secondary' : 'btn-primary',
-        btnLabel: st.plan === p.name ? 'Current plan' : 'Switch to ' + p.name,
-        pick: () => { this.setState({ plan: p.name }); this.toast('Plan set to ' + p.name, 'Saved locally — no Stripe account is connected.'); },
-      })),
-      toastStripe: () => this.toast('Stripe not connected', 'Add Stripe keys to .env to open a real billing portal.'),
-
       panelOpen: st.panelOpen, togglePanel: () => this.setState(s => ({ panelOpen: !s.panelOpen, bellCount: 0 })),
       agentChip: st.feedPaused ? 'Agent paused' : (aiOn ? 'Agent active · ' + (st.ai.model.split('/').pop() || 'live') : 'Agent offline · no API key'),
       hasBell: st.bellCount > 0, bellCount: st.bellCount,
@@ -1536,7 +1561,12 @@ class Component extends DCLogic {
         { k: 'Model', v: aiOn ? st.ai.model : 'No API key — put OPENROUTER_API_KEY in .env and reload' },
       ],
 
-      launchAgent: () => this.launchAgent(),
+      launchAgent: () => {
+        this.setState({ screen: 'dashboard' });
+        this.pushFeed('agent', 'Agent launched — ' + (aiOn ? 'running on ' + st.ai.model : 'idle until an API key is set'));
+        this.toast('Agent is live', aiOn ? ('Running on ' + st.ai.model) : 'Add OPENROUTER_API_KEY to .env, then reload this page');
+        if (st.rewrite === 'now' && aiOn) this.genAllDesc();
+      },
     };
   }
 }
