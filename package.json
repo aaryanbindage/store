@@ -1,0 +1,13 @@
+{
+  "name": "autostore-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AutoStore AI — local/hosted agent demo with an OpenRouter proxy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
