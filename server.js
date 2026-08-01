@@ -281,9 +281,54 @@ async function handleCheckStore(req, res) {
 
 // ---------------------------------------------------------------- serve
 
+// Accounts + the shared-password gate.
+const auth = require('./lib/auth').create(env, send, readBody);
+
+const UNLOCK_PAGE = `<!doctype html><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>AutoStore AI</title>
+<style>
+ *{box-sizing:border-box} body{margin:0;min-height:100vh;display:flex;align-items:center;
+   justify-content:center;background:#f4f4f2;font:15px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#111}
+ form{width:min(92vw,340px)} h1{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+ p{margin:0 0 20px;color:#666;font-size:13px}
+ input{width:100%;padding:12px;border:1px solid #ccc;background:#fff;font-size:15px;margin-bottom:10px}
+ button{width:100%;padding:12px;border:0;background:#ec3013;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+ .err{color:#ec3013;font-size:13px;min-height:18px;margin-top:8px}
+</style>
+<form id="f"><h1>AutoStore AI</h1><p>This instance is password protected.</p>
+<input id="p" type="password" placeholder="Password" autofocus autocomplete="current-password">
+<button>Unlock</button><div class="err" id="e"></div></form>
+<script>
+f.onsubmit = async ev => {
+  ev.preventDefault(); e.textContent = '';
+  const r = await fetch('/api/unlock', {method:'POST',headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({password: p.value})});
+  if (r.ok) location.reload(); else { e.textContent = 'Incorrect password.'; p.select(); }
+};
+</script>`;
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
   try {
+    // /api/unlock is the only route reachable while locked.
+    if (url.pathname === '/api/unlock') {
+      if (await auth.handle(req, res, url)) return;
+    }
+    if (!auth.isUnlocked(req)) {
+      if (url.pathname.startsWith('/api/')) {
+        return send(res, 401, { error: 'locked — unlock this instance first' });
+      }
+      return send(res, 200, UNLOCK_PAGE, { 'Content-Type': 'text/html; charset=utf-8' });
+    }
+
+    if (url.pathname.startsWith('/api/account/')) {
+      if (await auth.handle(req, res, url)) return;
+    }
+
+    // The template ships no favicon; answer once instead of logging a 404.
+    if (url.pathname === '/favicon.ico') {
+      return send(res, 200, Buffer.alloc(0), { 'Content-Type': 'image/x-icon' });
+    }
     if (url.pathname === '/api/status') return handleStatus(res);
     if (url.pathname === '/api/models') return handleModels(res);
     if (url.pathname === '/api/llm' && req.method === 'POST') return handleLLM(req, res);
@@ -302,5 +347,11 @@ server.listen(PORT, HOST, () => {
   console.log('  app dir : ' + APP_DIR);
   console.log('  env file: ' + ENV_FILE + (fs.existsSync(ENV_FILE) ? '' : '  (missing)'));
   console.log('  API key : ' + (key ? 'set (' + key.length + ' chars)' : 'NOT SET — AI features are off'));
+  console.log('  accounts: ' + auth.store.count() + '  (' + auth.store.file + ')');
+  console.log('  gate    : ' + (auth.gatePassword() ? 'ON — password required' : 'OFF'));
   if (!key) console.log('\n  Add this line to .env, then just reload the page:\n    OPENROUTER_API_KEY=sk-or-v1-...\n');
+  if (!auth.gatePassword()) {
+    console.log('\n  ⚠  APP_PASSWORD is not set — /api/llm is OPEN.');
+    console.log('     Fine on localhost; set it before exposing this publicly.\n');
+  }
 });
