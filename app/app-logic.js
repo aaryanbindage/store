@@ -591,6 +591,7 @@ class Component extends DCLogic {
       authBusy: st.authBusy,
       signInLabel: st.authBusy ? 'Working…' : 'Sign in',
       userEmail: st.user ? st.user.email : '',
+      isSignedIn: !!st.user,
       greeting: (hour < 12 ? 'Good morning.' : hour < 18 ? 'Good afternoon.' : 'Good evening.'),
       countdown: this.fmt(st.cutoff - st.now),
       goOrders: () => this.go('orders'),

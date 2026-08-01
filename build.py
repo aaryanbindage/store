@@ -132,6 +132,26 @@ def main() -> None:
     # The markup hardcodes the old demo's model name; bind it to the live one.
     html = html.replace("Gemini writes in your", "{{ agentName }} writes in your")
 
+    # --- Sign out ----------------------------------------------------------
+    # The header shows a store-initials chip but had no way back out. Add a
+    # sign-out button next to it, only while a session exists.
+    AVATAR = ('<span style="width:30px;height:30px;background:var(--color-text);'
+              'color:var(--color-bg);display:grid;place-items:center;'
+              'font-family:var(--font-heading);font-weight:800;font-size:11px">'
+              '{{ storeInit }}</span>')
+    SIGN_OUT = (
+        '<sc-if value="{{ isSignedIn }}" hint-placeholder-val="{{ true }}">'
+        '<button title="{{ userEmail }}" sc-camel-on-click="{{ signOut }}" '
+        'style="margin-left:10px;background:none;border:0;padding:4px 2px;cursor:pointer;'
+        'font-family:var(--font-heading);font-weight:700;font-size:11px;letter-spacing:.06em;'
+        'text-transform:uppercase;color:var(--color-neutral-600)">Sign out</button>'
+        '</sc-if>')
+    if AVATAR in html:
+        html = html.replace(AVATAR, AVATAR + SIGN_OUT, 1)
+        print("sign-out button placed")
+    else:
+        raise SystemExit("sign out: header avatar anchor not found")
+
     # The login fields shipped as unbound defaults ("demo@..."), so nothing the
     # user typed ever reached the logic. Bind them to real state.
     LOGIN = {
