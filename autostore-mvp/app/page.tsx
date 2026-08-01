@@ -63,12 +63,22 @@ export default function LandingPage() {
             AutoStore AI generates product descriptions and marketing content, tracks orders and
             shipping deadlines, and keeps every store you run in one dashboard.
           </p>
-          <div className="flex gap-3">
-            <Button size="lg" asChild>
-              <Link href="/register">Start free</Link>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-lg px-8 py-6 shadow-lg"
+              asChild
+            >
+              <a 
+                href="https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Subscribe monthly — $28
+              </a>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/pricing">See pricing</Link>
+              <Link href="/register">Start free</Link>
             </Button>
           </div>
         </section>
@@ -139,6 +149,31 @@ export default function LandingPage() {
           <div className="mt-8 text-center">
             <Button asChild>
               <Link href="/pricing">View full pricing</Link>
+            </Button>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="mx-auto max-w-4xl px-6 py-16 text-center">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Ready to automate your e-commerce business?
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Start using AI to generate content, track orders, and grow your store today.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold text-lg px-8 py-6 shadow-lg"
+              asChild
+            >
+              <a 
+                href="https://www.foundersweekends.com/api/pay?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Subscribe monthly — $28
+              </a>
             </Button>
           </div>
         </section>
