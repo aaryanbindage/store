@@ -197,7 +197,7 @@ NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 
 ## 🤝 Contributing
 
-This is currently a solo MVP project. Future contributions will be welcomed after the initial launch.
+This is currently a small MVP project. Future contributions will be welcomed after the initial launch.
 
 ## 📞 Support
 
