@@ -3,60 +3,23 @@ class Component extends DCLogic {
     super(props);
     const h = 3600000, m = 60000;
     // Fallback feed used only when the LLM is unavailable (no API key / offline).
-    this.FEED_SCRIPT = [
-      { kind: 'seo', text: 'Rewrote SEO title for Ash Glaze Mug — A/B test started', toast: null },
-      { kind: 'support', text: 'Answered #1042 (address change) — confirmed with customer in 38s', toast: null },
-      { kind: 'marketing', text: 'Generated 3 Instagram captions for the fall drop', toast: { title: 'Marketing drafts ready', body: '3 captions waiting in Marketing' } },
-      { kind: 'pricing', text: 'Repriced Wick Trimmer $14.00 → $12.50 to match competitor', toast: null },
-      { kind: 'support', text: 'Ticket #1044 refund ($76) exceeds your $50 cap — escalated', toast: { title: 'Agent needs your approval', body: 'Ticket #1044 refund is over the $50 cap' } },
-      { kind: 'inventory', text: 'Low stock: Oak & Amber Candle (6 left) — reorder email drafted', toast: null },
-      { kind: 'marketing', text: 'Abandoned-cart emails sent to 4 customers · avg cart $41', toast: { title: 'Recovery emails sent', body: '4 abandoned carts nudged' } },
-      { kind: 'orders', text: 'Synced 2 new orders from Shopify — deadlines calculated', toast: null },
-    ];
-    this.TASKS = ['Watching order #1187 — pickup 3:30 PM', 'Optimizing catalog SEO', 'Monitoring support inbox', 'Drafting fall campaign copy'];
+    this.FEED_SCRIPT = [];
+    this.TASKS = ['Watching your store', 'Monitoring the support inbox', 'Reviewing catalog copy'];
     this.STORAGE_KEY = 'autostore.state.v1';
 
     const base = {
       screen: null, onbStep: 1, panelOpen: true, feedPaused: false,
       now: Date.now(), cutoff: Date.now() + 1 * h + 41 * m + 22000,
-      toasts: [], bellCount: 0, actionCount: 47, feedIdx: 0, taskIdx: 0,
+      toasts: [], bellCount: 0, actionCount: 0, feedIdx: 0, taskIdx: 0,
       ai: { ready: false, hasKey: false, model: '', error: '' },
-      feed: [
-        { t: '2:41 PM', kind: 'orders', text: 'Packed slip + label printed for #1187 — USPS Priority' },
-        { t: '2:28 PM', kind: 'support', text: 'Answered #1041 (ships to Canada?) — resolved in 21s' },
-        { t: '2:12 PM', kind: 'seo', text: 'Meta descriptions refreshed on 4 product pages' },
-        { t: '1:56 PM', kind: 'pricing', text: 'Held price on Ember Vase — demand steady, no change needed' },
-      ],
-      products: [
-        { sku: 'KE-101', name: 'Ash Glaze Mug', price: '$28.00', stock: 24, st: 'generated', desc: 'Hand-thrown stoneware dipped in a matte ash glaze — no two pours alike.' },
-        { sku: 'KE-204', name: 'Oak & Amber Candle 8oz', price: '$24.00', stock: 6, st: 'generated', desc: 'Smoked oak and amber resin, a 40-hour burn in a reusable ceramic vessel.' },
-        { sku: 'KE-112', name: 'Birch Taper Set (4)', price: '$18.00', stock: 40, st: 'draft', desc: '' },
-        { sku: 'KE-131', name: 'Ember Ceramic Vase', price: '$52.00', stock: 12, st: 'draft', desc: '' },
-        { sku: 'KE-301', name: 'Wick Trimmer, Matte Black', price: '$12.50', stock: 31, st: 'generated', desc: 'Powder-coated steel, weighted to sit flat. Keeps every wick at ¼ inch.' },
-        { sku: 'KE-140', name: 'Smoke Grey Carafe', price: '$46.00', stock: 9, st: 'draft', desc: '' },
-      ],
-      orders: [
-        { id: '#1187', customer: 'Maya Rojas', items: 'Ash Glaze Mug ×2', total: '$56.00', st: 'urgent' },
-        { id: '#1186', customer: 'Devon Clarke', items: 'Oak & Amber Candle', total: '$24.00', st: 'due', due: 'Today · 5:00 PM' },
-        { id: '#1185', customer: 'Amara Okafor', items: 'Birch Taper Set, Smoke Grey Carafe', total: '$64.00', st: 'due', due: 'Today · 5:00 PM' },
-        { id: '#1184', customer: 'Tom Hendricks', items: 'Ember Ceramic Vase', total: '$52.00', st: 'ok', due: 'Tomorrow · 12:00 PM' },
-        { id: '#1183', customer: 'Lena Fischer', items: 'Wick Trimmer', total: '$12.50', st: 'shipped', due: 'Shipped 11:02 AM' },
-        { id: '#1182', customer: 'Ana Duarte', items: 'Ash Glaze Mug', total: '$28.00', st: 'shipped', due: 'Shipped 9:47 AM' },
-      ],
-      tickets: [
-        { id: '#1044', from: 'Jordan P.', subject: 'Carafe arrived cracked', preview: 'Refund $76 — over your $50 auto-cap', st: 'human', time: '12m ago', msg: 'Hi — my carafe arrived cracked down one side. I\'d like a refund please. Order #1181, $76 total.', draft: '', note: 'refund exceeds $50 cap' },
-        { id: '#1043', from: 'Sam K.', subject: 'Candle burns unevenly', preview: 'Open to draft a reply', st: 'draft', time: '41m ago', msg: 'My Oak & Amber candle tunnels down the middle and wastes half the wax. Is this normal?', draft: '', note: 'first-burn advice, low risk' },
-        { id: '#1042', from: 'Priya N.', subject: 'Change shipping address', preview: 'Resolved autonomously in 38s', st: 'resolved', time: '1h ago', msg: 'Can you send order #1185 to my office instead? 44 Fraser Ave, Toronto.', draft: '' },
-        { id: '#1041', from: 'Chris B.', subject: 'Do you ship to Canada?', preview: 'Resolved autonomously in 21s', st: 'resolved', time: '2h ago', msg: 'Do you ship to Canada, and what does it cost?', draft: '' },
-        { id: '#1040', from: 'Dana W.', subject: 'Discount code not working', preview: 'Resolved autonomously in 45s', st: 'resolved', time: '4h ago', msg: 'FALL10 says expired but your Instagram posted it yesterday?', draft: '' },
-      ],
-      requests: [
-        { text: 'Raise candle prices 5%, skip anything on sale', st: 'progress', time: '1:12 PM', resp: 'Repricing 2 of 4 candle SKUs now — sale items excluded. Done in ~2 min.' },
-        { text: 'Set up abandoned-cart recovery emails', st: 'done', time: 'Yesterday', resp: 'Live — 3-email sequence in your Warm voice. First send already recovered $82.' },
-      ],
+      feed: [],
+      products: [],
+      orders: [],
+      tickets: [],
+      requests: [],
       genItems: [],
       selTicket: null, reqText: '', mkTopic: '', mkType: 'Instagram post', mkBusy: false,
-      onbUrl: 'kiln-ember.myshopify.com', onbConnected: false, rewrite: 'now',
+      onbUrl: '', onbConnected: false, rewrite: 'now',
       autoLevel: 'Approve first', voice: 'Warm', refundCap: '50', discountCap: '20',
       uploads: {}, plan: 'Growth',
     };
@@ -79,6 +42,7 @@ class Component extends DCLogic {
       const live = this.props.agentFeedLive ?? true;
       if (!live || this.state.feedPaused || this.curScreen() === 'login' || this.curScreen() === 'onboarding') return;
       const script = this.aiFeed && this.aiFeed.length ? this.aiFeed : this.FEED_SCRIPT;
+      if (!script.length) return;   // nothing to replay until the agent feed loads
       const e = script[this.state.feedIdx % script.length];
       this.pushFeed(e.kind, e.text);
       this.setState(s => ({ feedIdx: s.feedIdx + 1, taskIdx: s.taskIdx + 1, bellCount: s.bellCount + 1, actionCount: s.actionCount + 1 }));
@@ -153,9 +117,11 @@ class Component extends DCLogic {
   /** Store context handed to every generation so output stays on-brand. */
   brandBrief() {
     const st = this.state;
-    const name = this.props.storeName ?? 'Kiln & Ember';
-    const catalog = st.products.map(p => `- ${p.name} (${p.sku}), ${p.price}, ${p.stock} in stock`).join('\n');
-    return `Store: ${name} — a small-batch ceramics and home-goods maker (stoneware, candles, glassware).\n` +
+    const name = (this.props.storeName || '').trim() || 'this store';
+    const catalog = st.products.length
+      ? st.products.map(p => `- ${p.name} (${p.sku}), ${p.price}, ${p.stock} in stock`).join('\n')
+      : '(no products yet)';
+    return `Store: ${name}.\n` +
       `Brand voice: ${st.voice} (Plain = flat and factual; Warm = friendly and human; Bold = punchy and confident).\n` +
       `Guardrails: refunds up to $${st.refundCap} auto-approved, max discount ${st.discountCap}%.\n` +
       `Catalog:\n${catalog}`;
@@ -267,7 +233,8 @@ class Component extends DCLogic {
   /** Renders a real packing slip and opens the browser print dialog. */
   printLabel() {
     const o = this.state.orders.find(x => x.st === 'urgent') || this.state.orders[0];
-    const store = this.props.storeName ?? 'Kiln & Ember';
+    if (!o) { this.toast('No orders yet', 'Nothing to print a slip for.'); return; }
+    const store = (this.props.storeName || '').trim() || 'Your store';
     const html = `<!doctype html><meta charset="utf-8"><title>Packing slip ${this.esc(o.id)}</title>
 <style>
  body{font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;margin:40px;color:#111}
@@ -503,7 +470,7 @@ class Component extends DCLogic {
 
   renderVals() {
     const st = this.state, screen = this.curScreen();
-    const storeName = this.props.storeName ?? 'Kiln & Ember';
+    const storeName = (this.props.storeName || '').trim() || 'Your store';
     const appScreens = ['dashboard', 'products', 'orders', 'marketing', 'support', 'requests', 'billing'];
     const isApp = appScreens.includes(screen);
     const hour = new Date().getHours();
@@ -532,7 +499,7 @@ class Component extends DCLogic {
       'Full auto': 'The agent acts autonomously inside your guardrails and reports back. You review a daily digest.',
     };
     const voiceSamples = { Plain: 'Your order shipped. Tracking: 9400 1102.', Warm: 'Good news — your order\'s on its way. Track it here.', Bold: 'It\'s out the door. Watch the mail like a hawk.' };
-    const missingPhotos = ['KE-112', 'KE-131', 'KE-140'];
+    const missingPhotos = st.products.filter(p => !p.desc).map(p => p.sku);
 
     return {
       storeName, storeInit: storeName.split(/[\s&]+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase(),
@@ -556,6 +523,30 @@ class Component extends DCLogic {
         bg: screen === n[0] ? 'color-mix(in srgb, var(--color-accent) 7%, transparent)' : 'transparent',
         badge: n[0] === 'support' ? st.tickets.filter(t => t.st === 'human' || t.st === 'draft').length || false : false,
       })),
+
+      // ---- values that used to be hardcoded demo copy in the markup ----
+      buildNote: '',
+      brandLine: storeName + (st.onbConnected && st.onbUrl ? ' · ' + st.onbUrl : ''),
+      skipLabel: 'Skip for now',
+      connectedLine: st.onbUrl ? 'Connected to ' + st.onbUrl : 'Not connected yet',
+      resolvedRatio: st.tickets.length
+        ? st.tickets.filter(t => t.st === 'resolved' || t.st === 'sent').length + ' of ' + st.tickets.length
+        : 'No tickets',
+      nextOrderLine: (() => {
+        const o = st.orders.find(x => x.st === 'urgent') || st.orders.find(x => x.st === 'due');
+        return o ? o.id + ' · ' + o.customer : 'No orders waiting';
+      })(),
+      watchLine: (() => {
+        const o = st.orders.find(x => x.st === 'urgent');
+        return o
+          ? 'Agent watch: ' + o.id + ' is the next deadline. You will be told before it slips.'
+          : 'Agent watch: nothing is at risk right now.';
+      })(),
+      loginActions: String(st.actionCount),
+      loginResolved: st.tickets.length
+        ? st.tickets.filter(t => t.st === 'resolved' || t.st === 'sent').length + '/' + st.tickets.length
+        : '0',
+      loginMissed: '0',
 
       stats: [
         { label: 'Revenue today', value: '$' + st.orders.filter(o => o.st === 'shipped').reduce((a, o) => a + parseFloat(o.total.replace(/[^0-9.]/g, '')), 0).toFixed(2) },

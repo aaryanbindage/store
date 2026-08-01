@@ -29,6 +29,33 @@ ASSETS = {
 }
 
 # support.js loads these from unpkg unless window.__resources redirects them.
+# Hosted checkout link supplied by the site owner. The link itself handles the
+# entire payment — there is no Stripe integration, no cart, and no fallback
+# path in this codebase by design.
+PAY_LINK = ("https://www.foundersweekends.com/api/pay"
+            "?venture=5fafe8d0-8f98-4405-9ed7-752846dbccfa&amount=2800&name=Venture+1")
+BUY_LABEL = "Subscribe — $28"
+
+BUY_CSS = """<style>
+.buy-btn{display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;min-height:60px;padding:18px 28px;margin:22px 0;
+  background:var(--color-accent);color:var(--color-bg);
+  font-family:var(--font-heading);font-weight:800;font-size:18px;letter-spacing:.01em;
+  text-decoration:none;border:2px solid var(--color-accent);cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.buy-btn:hover{background:var(--color-bg);color:var(--color-accent)}
+.buy-btn:focus-visible{outline:3px solid var(--color-accent);outline-offset:3px}
+@media (max-width:640px){.buy-btn{min-height:64px;font-size:19px;padding:20px 22px}}
+</style>"""
+
+
+def buy_button() -> str:
+    """A plain anchor to the owner's hosted checkout. No JS, no fallback."""
+    href = PAY_LINK.replace("&", "&amp;")
+    return ('<a class="buy-btn" href="%s">%s <span aria-hidden="true">→</span></a>'
+            % (href, BUY_LABEL))
+
+
 RESOURCE_MAP = {
     "https://unpkg.com/react@18.3.1/umd/react.production.min.js": "vendor/react.production.min.js",
     "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js": "vendor/react-dom.production.min.js",
@@ -70,6 +97,31 @@ def main() -> None:
             % json.dumps(RESOURCE_MAP, indent=2))
     html = html.replace("<script src=\"support.js\">", shim + "<script src=\"support.js\">", 1)
 
+    # --- Buy buttons -------------------------------------------------------
+    # Two identical links to the owner's hosted checkout: one directly under
+    # the headline + offer, one at the end of the content column.
+    html = html.replace("<helmet>", "<helmet>" + BUY_CSS, 1)
+
+    TOP_ANCHOR = ("One agent that writes, prices, ships and answers — "
+                  "and asks before it matters.</p>")
+    BOTTOM_ANCHOR = ('<div style="margin-top:16px;font-size:13px">No account? '
+                     '<a style="cursor:pointer" sc-camel-on-click="{{ startOnboarding }}">'
+                     'Set up your agent →</a></div>')
+
+    placed = 0
+    if TOP_ANCHOR in html:
+        html = html.replace(TOP_ANCHOR, TOP_ANCHOR + buy_button(), 1)
+        placed += 1
+    else:
+        raise SystemExit("buy button: top anchor (headline/offer) not found")
+
+    if BOTTOM_ANCHOR in html:
+        html = html.replace(BOTTOM_ANCHOR, BOTTOM_ANCHOR + buy_button(), 1)
+        placed += 1
+    else:
+        raise SystemExit("buy button: bottom anchor (end of column) not found")
+    print("buy buttons placed: %d -> %s" % (placed, PAY_LINK))
+
     # Swap the bundled demo logic for the live version in app/app-logic.js.
     logic = LOGIC.read_text()
     m = re.search(r'(<script[^>]*data-dc-script[^>]*>)(.*?)(</script>)', html, re.S)
@@ -81,6 +133,44 @@ def main() -> None:
     html = html.replace("Gemini writes in your", "{{ agentName }} writes in your")
     if "Gemini" in html.split("data-dc-script")[0]:
         print("warning: 'Gemini' still present in markup")
+
+    # The export baked a fictional store ("Kiln & Ember", order #1187, ...) into
+    # the markup as literal text. Swap each for a binding so the page shows the
+    # real state instead of a demo that never existed.
+    DEMO_COPY = {
+        "Demo build — any credentials work.": "{{ buildNote }}",
+        "Kiln &amp; Ember · live since June": "{{ brandLine }}",
+        "Skip — use demo store": "{{ skipLabel }}",
+        "Order #1187 · USPS pickup 3:30 PM": "{{ nextOrderLine }}",
+        "<strong>Agent watch:</strong> if #1187 isn't scanned by 3:10 PM, "
+        "I'll book a UPS pickup as backup and email you.": "{{ watchLine }}",
+        ">9 of 11<": ">{{ resolvedRatio }}<",
+        "Connected to kiln-ember.myshopify.com": "{{ connectedLine }}",
+        # login hero counters
+        'tabular-nums">47</span><br>agent actions today':
+            'tabular-nums">{{ loginActions }}</span><br>agent actions today',
+        'tabular-nums">9/11</span><br>tickets resolved':
+            'tabular-nums">{{ loginResolved }}</span><br>tickets resolved',
+        'tabular-nums">0</span><br>missed deadlines':
+            'tabular-nums">{{ loginMissed }}</span><br>missed deadlines',
+    }
+    # Prototype prop defaults and prefilled form values from the demo export.
+    DEMO_COPY.update({
+        '&quot;default&quot;: &quot;Kiln &amp; Ember&quot;': '&quot;default&quot;: &quot;&quot;',
+        'sc-camel-default-value="demo@kilnember.com"': 'placeholder="you@yourstore.com"',
+        'sc-camel-default-value="••••••••••"': 'placeholder="••••••••"',
+    })
+
+    missed = []
+    for old, new in DEMO_COPY.items():
+        if old in html:
+            html = html.replace(old, new)
+        else:
+            missed.append(old[:48])
+    if missed:
+        print("warning: demo copy not found (markup changed?):")
+        for x in missed:
+            print("   -", x)
 
     out = APP / "index.html"
     out.write_text(html)
